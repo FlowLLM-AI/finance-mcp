@@ -1,27 +1,19 @@
-import asyncio
-from typing import TYPE_CHECKING
+from crawl4ai import BrowserConfig, CrawlerRunConfig, CacheMode, AsyncWebCrawler
+from flowllm.core.context import C
+from flowllm.core.op import BaseAsyncToolOp
+from flowllm.core.schema import ToolCall
 
-from loguru import logger
-
-from flowllm.context.flow_context import FlowContext
-from flowllm.context.service_context import C
-from flowllm.op.base_async_tool_op import BaseAsyncToolOp
-from flowllm.schema.tool_call import ToolCall
-from flowllm.utils.web_utils import get_random_user_agent
-
-if TYPE_CHECKING:
-    from crawl4ai import BrowserConfig, CrawlerRunConfig, AsyncWebCrawler
+from finmcp.utils import get_random_user_agent
 
 
-@C.register_op(register_app="FlowLLM")
+@C.register_op()
 class Crawl4aiOp(BaseAsyncToolOp):
 
-    def __init__(
-        self,
-        max_content_len: int = 30000,
-        enable_cache: bool = True,
-        cache_expire_hours: float = 1,
-        **kwargs,
+    def __init__(self,
+                 max_content_char_length: int = 50000,
+                 enable_cache: bool = True,
+                 cache_expire_hours: float = 1,
+                 **kwargs,
     ):
 
         super().__init__(
@@ -30,7 +22,7 @@ class Crawl4aiOp(BaseAsyncToolOp):
             **kwargs,
         )
 
-        self.max_content_len: int = max_content_len
+        self.max_content_char_length: int = max_content_char_length
         self.browser_config = None
         self.crawler_config = None
 
@@ -49,15 +41,12 @@ class Crawl4aiOp(BaseAsyncToolOp):
         )
 
     async def async_execute(self):
-        # Lazy import crawl4ai only when actually needed
-        from crawl4ai import BrowserConfig, CrawlerRunConfig, CacheMode, AsyncWebCrawler
-
         url: str = self.input_dict["url"]
 
         if self.enable_cache:
             cached_result = self.cache.load(hash(url))
             if cached_result:
-                self.set_result(cached_result["response_content"])
+                self.set_output(cached_result["response_content"])
                 return
 
         # Initialize configs lazily
@@ -73,7 +62,7 @@ class Crawl4aiOp(BaseAsyncToolOp):
 
         async with AsyncWebCrawler(config=self.browser_config) as crawler:
             result = await crawler.arun(url=url, config=self.crawler_config)
-            response_content = result.markdown[: self.max_content_len]
+            response_content = result.markdown[: self.max_content_char_length]
 
             final_result = {
                 "url": url,
@@ -83,20 +72,4 @@ class Crawl4aiOp(BaseAsyncToolOp):
             if self.enable_cache:
                 self.cache.save(hash(url), final_result, expire_hours=self.cache_expire_hours)
 
-            self.set_result(response_content)
-
-
-async def main():
-    from flowllm.app import FlowLLMApp
-
-    async with FlowLLMApp(load_default_config=True):
-        url = "https://stockpage.10jqka.com.cn/601899/"
-        context = FlowContext(url=url)
-
-        op = Crawl4aiOp()
-        await op.async_call(context=context)
-        logger.info(op.output)
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
+            self.set_output(response_content)

@@ -3,15 +3,15 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "fin-mcp"
+name = "finmcp"
 dynamic = ["version"]
-description = "FlowLLM: Simplifying LLM-based HTTP/MCP Service Development"
+description = "todo"
 authors = [
     { name = "jinli.yl", email = "jinli.yl@alibaba-inc.com" },
 ]
 license = {file = "LICENSE"}
 readme = "README.md"
-keywords = ["llm", "ai", "flow", "framework", "openai", "chatgpt", "language-model", "mcp", "http"]
+keywords = ["fin", "mcp"]
 requires-python = ">=3.10"
 
 classifiers = [
@@ -29,28 +29,9 @@ classifiers = [
 ]
 
 dependencies = [
-    "dashscope>=1.13.0",
-    "fastapi>=0.104.0",
-    "fastmcp>=0.1.0",
-    "httpx>=0.25.0",
-    "loguru>=0.7.0",
-    "numpy>=1.24.0",
-    "pandas>=2.0.0",
-    "openai>=1.3.0",
-    "pydantic>=2.0.0",
-    "PyYAML>=6.0.0",
-    "requests>=2.31.0",
-    "tqdm>=4.66.0",
-    "urllib3>=2.0.0",
-    "uvicorn[standard]>=0.23.0",
-    "pyfiglet>=0.8.0",
-    "rich>=13.5.0",
-    "pathspec>=0.12.1",
-    "litellm>=1.0.0",
-    "elasticsearch>=8.10.0",
-    "chromadb>=0.4.0",
-    "qdrant_client>=1.15.1",
-    "tavily-python>=0.2.0",
+    "akshare>=1.9.0",
+    "crawl4ai>=0.7.4",
+    "flowllm>=0.2.0.6",
 ]
 
 [project.optional-dependencies]
@@ -62,34 +43,10 @@ dev = [
     "mkdocs-shadcn",
 ]
 
-reme = [
-
-]
-
-fin = [
-    "akshare>=1.9.0",
-    "crawl4ai>=0.7.4",
-]
-
-token = [
-#    "modelscope>=1.10.0",
-#    "diffusers>=0.21.0",
-#    "peft>=0.6.0",
-    "transformers>=4.35.0",
-    "tiktoken>=0.5.0",
-]
-
-skill = [
-    "pipreqs",
-]
-
-full = [
-    "flowllm[dev,reme,fin,token,skill]",
-]
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["flowllm*"]
+include = ["finmcp*"]
 
 [tool.setuptools.package-data]
 flowllm = [
@@ -97,13 +54,13 @@ flowllm = [
 ]
 
 [tool.setuptools.dynamic]
-version = {attr = "flowllm.__version__"}
+version = {attr = "finmcp.__version__"}
 
 [project.urls]
-Homepage = "https://github.com/flowllm-ai/flowllm"
-Documentation = "https://flowllm-ai.github.io/flowllm/"
-Repository = "https://github.com/flowllm-ai/flowllm"
+Homepage = "https://github.com/flowllm-ai/finmcp"
+Documentation = "https://flowllm-ai.github.io/finmcp/"
+Repository = "https://github.com/flowllm-ai/finmcp"
 
 [project.scripts]
-flowllm = "flowllm.main:main"
+finmcp = "finmcp.main:main"
 
