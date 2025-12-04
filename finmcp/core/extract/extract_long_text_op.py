@@ -1,23 +1,18 @@
-import asyncio
+from flowllm.core.context import C
+from flowllm.core.enumeration import Role
+from flowllm.core.op import BaseAsyncToolOp
+from flowllm.core.schema import ToolCall, Message
 
-from loguru import logger
-
-from flowllm.context.flow_context import FlowContext
-from flowllm.context.service_context import C
-from flowllm.enumeration.role import Role
-from flowllm.op.base_async_tool_op import BaseAsyncToolOp
-from flowllm.schema.message import Message
-from flowllm.schema.tool_call import ToolCall
-from flowllm.utils.common_utils import get_datetime
+from finmcp.core.utils import get_datetime
 
 
-@C.register_op(register_app="FlowLLM")
+@C.register_op()
 class ExtractLongTextOp(BaseAsyncToolOp):
     file_path: str = __file__
 
-    def __init__(self, llm: str = "qwen3_80b_instruct", max_content_length: int = 30000, **kwargs):
-        super().__init__(llm=llm, **kwargs)
-        self.max_content_length = max_content_length
+    def __init__(self, max_content_char_length: int = 50000, **kwargs):
+        super().__init__(**kwargs)
+        self.max_content_char_length = max_content_char_length
 
     def build_tool_call(self) -> ToolCall:
         return ToolCall(
@@ -40,7 +35,7 @@ class ExtractLongTextOp(BaseAsyncToolOp):
 
     async def async_execute(self):
         long_text: str = self.input_dict["long_text"]
-        long_text = long_text[: self.max_content_length]
+        long_text = long_text[: self.max_content_char_length]
         query: str = self.input_dict["query"]
 
         extract_content_prompt = self.prompt_format(
@@ -50,21 +45,4 @@ class ExtractLongTextOp(BaseAsyncToolOp):
             query=query,
         )
         assistant_message = await self.llm.achat(messages=[Message(role=Role.USER, content=extract_content_prompt)])
-        self.set_result(assistant_message.content)
-
-
-async def main():
-    from flowllm.app import FlowLLMApp
-
-    async with FlowLLMApp(load_default_config=True):
-        long_text = """..."""
-        query = "紫金好不好"
-        context = FlowContext(query=query, long_text=long_text)
-
-        op = ExtractLongTextOp()
-        await op.async_call(context=context)
-        logger.info(op.output)
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
+        self.set_output(assistant_message.content)

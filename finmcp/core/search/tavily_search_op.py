@@ -1,37 +1,15 @@
-"""Tavily web search operation module.
-
-This module provides a tool operation for performing web searches using the Tavily API.
-It enables LLM models to retrieve relevant information from the internet by executing
-search queries and optionally extracting content from search results.
-"""
-
 import json
 import os
-from typing import TYPE_CHECKING
 
+from flowllm.core.context import C
+from flowllm.core.op import BaseAsyncToolOp
+from flowllm.core.schema import ToolCall
 from loguru import logger
-
-from ...core.context import C
-from ...core.op import BaseAsyncToolOp
-from ...core.schema import ToolCall
-
-if TYPE_CHECKING:
-    from tavily import AsyncTavilyClient
 
 
 @C.register_op()
 class TavilySearchOp(BaseAsyncToolOp):
-    """A tool operation for performing web searches using Tavily API.
-
-    This operation enables LLM models to search the internet for information by
-    providing search keywords. It supports optional content extraction from search
-    results with configurable character limits.
-
-    Attributes:
-        enable_extract: Whether to extract raw content from search results (default: False).
-        item_max_char_count: Maximum character count per item when extracting (default: 20000).
-        all_max_char_count: Maximum total character count for all extracted items (default: 50000).
-    """
+    file_path: str = __file__
 
     def __init__(
         self,
@@ -45,7 +23,7 @@ class TavilySearchOp(BaseAsyncToolOp):
         self.item_max_char_count: int = item_max_char_count
         self.all_max_char_count: int = all_max_char_count
 
-        self._client: AsyncTavilyClient | None = None
+        self._client = None
 
     def build_tool_call(self) -> ToolCall:
         return ToolCall(
@@ -71,7 +49,7 @@ class TavilySearchOp(BaseAsyncToolOp):
         if self._client is None:
             from tavily import AsyncTavilyClient
 
-            self._client = AsyncTavilyClient(api_key=os.environ["TAVILY_API_KEY"])
+            self._client = AsyncTavilyClient(api_key=os.environ.get("TAVILY_API_KEY", ""))
         return self._client
 
     async def async_execute(self):

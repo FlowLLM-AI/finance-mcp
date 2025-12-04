@@ -3,13 +3,13 @@ import os
 os.environ["FLOW_APP_NAME"] = "FinMCP"
 
 from . import core
-from . import utils
+from . import config
 
 from .main import FinMcpApp
 
 __all__ = [
     "core",
-    "utils",
+    "config",
     "FinMcpApp",
 ]
 

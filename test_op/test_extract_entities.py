@@ -1,13 +1,17 @@
-async def main():
-    from flowllm.app import FlowLLMApp
+import asyncio
 
-    async with FlowLLMApp(load_default_config=True):
-        # query = "茅台和五粮液哪个好？现在适合买入以太坊吗？"
-        query = "中概etf？"
-        context = FlowContext(query=query)
+from finmcp import FinMcpApp
+from finmcp.core.extract import ExtractEntitiesCodeOp
+from finmcp.core.search import DashscopeSearchOp
+
+
+async def main():
+    async with FinMcpApp():
+        query = "茅台和五粮液哪个好？现在适合买入以太坊吗？"
+        # query = "中概etf？"
         op = ExtractEntitiesCodeOp() << DashscopeSearchOp()
-        await op.async_call(context=context)
-        logger.info(op.output)
+        await op.async_call(query=query)
+        print(op.output)
 
 
 if __name__ == "__main__":

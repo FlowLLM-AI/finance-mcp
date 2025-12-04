@@ -7,12 +7,10 @@ search queries and returning formatted results.
 
 import os
 
-import dashscope
+from flowllm.core.context import C
+from flowllm.core.op import BaseAsyncToolOp
+from flowllm.core.schema import ToolCall
 from loguru import logger
-
-from ...core.context import C
-from ...core.op import BaseAsyncToolOp
-from ...core.schema import ToolCall
 
 
 @C.register_op()
@@ -22,12 +20,6 @@ class DashscopeSearchOp(BaseAsyncToolOp):
     This operation enables LLM models to search the internet for information by
     providing search keywords. It supports various search strategies and can
     optionally use role prompts to enhance search queries.
-
-    Attributes:
-        model: The Dashscope model to use for search (default: "qwen-plus").
-        search_strategy: The search strategy to use (default: "max").
-        enable_role_prompt: Whether to use role prompts for query enhancement.
-        api_key: Dashscope API key loaded from environment variable.
     """
 
     file_path: str = __file__
@@ -46,13 +38,12 @@ class DashscopeSearchOp(BaseAsyncToolOp):
         self.enable_role_prompt: bool = enable_role_prompt
 
         self.api_key = os.getenv("DASHSCOPE_API_KEY", "")
-        # https://help.aliyun.com/zh/model-studio/web-search?spm=a2c4g.11186623.help-menu-2400256.d_0_7_0.670e253awctI43&scm=20140722.H_2867560._.OR_help-T_cn~zh-V_1
+        # https://help.aliyun.com/zh/model-studio/web-search
 
     def build_tool_call(self) -> ToolCall:
         return ToolCall(
             **{
-                "description": "Use search keywords to retrieve relevant information from the internet. "
-                "If you have multiple keywords, please call this tool separately for each one.",
+                "description": self.get_prompt("tool_description"),
                 "input_schema": {
                     "query": {
                         "type": "string",
@@ -78,6 +69,8 @@ class DashscopeSearchOp(BaseAsyncToolOp):
             user_query = query
         logger.info(f"user_query={user_query}")
         messages: list = [{"role": "user", "content": user_query}]
+
+        import dashscope
 
         response = await dashscope.AioGeneration.call(
             api_key=self.api_key,

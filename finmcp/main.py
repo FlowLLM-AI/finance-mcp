@@ -1,11 +1,10 @@
 import sys
 
-from finmcp.config import ConfigParser
+from .config import ConfigParser
 from flowllm.core.application import Application
 
 
 class FinMcpApp(Application):
-
 
     def __init__(
         self,

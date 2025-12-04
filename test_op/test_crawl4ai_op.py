@@ -1,7 +1,7 @@
 import asyncio
 
 from finmcp import FinMcpApp
-from finmcp.crawl import Crawl4aiOp
+from finmcp.core.crawl import Crawl4aiOp
 
 
 async def main():

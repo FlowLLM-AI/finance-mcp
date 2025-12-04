@@ -1,5 +1,10 @@
 import shutil
 import subprocess
+import warnings
+
+from pydantic.warnings import PydanticDeprecatedSince20
+
+warnings.filterwarnings("ignore", category=PydanticDeprecatedSince20)
 
 from crawl4ai import BrowserConfig, CrawlerRunConfig, CacheMode, AsyncWebCrawler
 from flowllm.core.context import C
@@ -14,6 +19,7 @@ def ensure_playwright_browsers_installed():
     """Check if Playwright browsers are installed, install if not."""
     try:
         from playwright.sync_api import sync_playwright
+
         with sync_playwright() as p:
             # Try to get the executable path, this will fail if not installed
             logger.info(p.chromium.executable_path)
@@ -32,11 +38,12 @@ def ensure_playwright_browsers_installed():
 @C.register_op()
 class Crawl4aiOp(BaseAsyncToolOp):
 
-    def __init__(self,
-                 max_content_char_length: int = 50000,
-                 enable_cache: bool = True,
-                 cache_expire_hours: float = 1,
-                 **kwargs,
+    def __init__(
+            self,
+            max_content_char_length: int = 50000,
+            enable_cache: bool = True,
+            cache_expire_hours: float = 1,
+            **kwargs,
     ):
 
         super().__init__(
@@ -98,3 +105,10 @@ class Crawl4aiOp(BaseAsyncToolOp):
                 self.cache.save(hash(url), final_result, expire_hours=self.cache_expire_hours)
 
             self.set_output(response_content)
+
+
+@C.register_op()
+class Crawl4aiLongTextOp(Crawl4aiOp):
+    def __init__(self, **kwargs):
+        kwargs.setdefault("output_schema_mapping", {"crawl4ai_result": "long_text"})
+        super().__init__(**kwargs)

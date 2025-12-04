@@ -12,10 +12,10 @@ from flowllm.core.schema import ToolCall
 class AkshareRealtimePriceOp(BaseAsyncToolOp):
 
     def __init__(
-            self,
-            enable_cache: bool = True,
-            cache_expire_hours: float = 0.1,
-            **kwargs,
+        self,
+        enable_cache: bool = True,
+        cache_expire_hours: float = 0.1,
+        **kwargs,
     ):
         super().__init__(enable_cache=enable_cache, cache_expire_hours=cache_expire_hours, **kwargs)
 
@@ -42,7 +42,9 @@ class AkshareRealtimePriceOp(BaseAsyncToolOp):
         stock_bj_a_spot_em_df = ak.stock_bj_a_spot_em()
 
         df: pd.DataFrame = pd.concat(
-            [stock_sh_a_spot_em_df, stock_sz_a_spot_em_df, stock_bj_a_spot_em_df], axis=0)
+            [stock_sh_a_spot_em_df, stock_sz_a_spot_em_df, stock_bj_a_spot_em_df],
+            axis=0,
+        )
         df = df.drop(columns=["序号"])
         df = df.reset_index(drop=True)
         df = df.sort_values(by="代码")

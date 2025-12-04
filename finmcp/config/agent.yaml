@@ -1,0 +1,9 @@
+flow:
+  demo_http_flow:
+    flow_content: ReactAgentOp(add_think_tool=True)
+    description: "react agent with search op"
+    input_schema:
+      query:
+        type: string
+        description: "user query"
+        required: true

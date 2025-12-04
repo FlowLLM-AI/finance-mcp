@@ -12,36 +12,20 @@ http:
 
 
 flow:
-  demo_http_flow:
-    flow_content: GenSystemPromptOp() >> ChatOp()
-    description: "ai chat assistant"  # Optional
-    input_schema: # Optional
-      query:
-        type: string
-        description: "user query"
-        required: true
+  a_stock_realtime_price:
+    flow_content: AkshareRealtimePriceOp()
 
-  demo_stream_http_flow:
-    flow_content: GenSystemPromptOp() >> StreamChatOp()
-    stream: true
-    description: "ai chat assistant"  # Optional
-    input_schema: # Optional
-      query:
-        type: string
-        description: "user query"
-        required: true
+  a_stock_calculate:
+    flow_content: AkshareCalculateOp()
 
-  demo_mcp_flow:
-    flow_content: MockSearchOp()
-    description: "search results for a given query."
-    input_schema:
-      query:
-        type: string
-        description: "user query"
-        required: true
+  extract_entities_code:
+    flow_content: ExtractEntitiesCodeOp()
 
-  skill_agent:
-    flow_content: SkillAgentOp() << [LoadSkillOp(), ReadReferenceFileOp(), RunShellCommandOp()]
+  dashscope_search:
+    flow_content: DashscopeSearchOp()
+
+  tavily_search:
+    flow_content: TavilySearchOp()
 
 llm:
   default:
@@ -49,83 +33,18 @@ llm:
     model_name: qwen3-30b-a3b-instruct-2507
     params:
       temperature: 0.6
-    token_count: # Optional
-      model_name: Qwen/Qwen3-30B-A3B-Instruct-2507
-      backend: hf
-      params:
-        use_mirror: true
 
   qwen3_30b_instruct:
     backend: openai_compatible
     model_name: qwen3-30b-a3b-instruct-2507
-    token_count: # Optional
-      model_name: Qwen/Qwen3-30B-A3B-Instruct-2507
-      backend: hf
-      params:
-        use_mirror: true
 
   qwen3_30b_thinking:
     backend: openai_compatible
     model_name: qwen3-30b-a3b-thinking-2507
-    token_count: # Optional
-      model_name: Qwen/Qwen3-30B-A3B-Thinking-2507
-      backend: hf
-      params:
-        use_mirror: true
 
-  qwen3_235b_instruct:
+  qwen_flash:
     backend: openai_compatible
-    model_name: qwen3-235b-a22b-instruct-2507
-    token_count: # Optional
-      model_name: Qwen/Qwen3-235B-A22B-Instruct-2507
-      backend: hf
-      params:
-        use_mirror: true
-
-  qwen3_235b_thinking:
-    backend: openai_compatible
-    model_name: qwen3-235b-a22b-thinking-2507
-    token_count: # Optional
-      model_name: Qwen/Qwen3-235B-A22B-Thinking-2507
-      backend: hf
-      params:
-        use_mirror: true
-
-  qwen3_80b_instruct:
-    backend: openai_compatible
-    model_name: qwen3-next-80b-a3b-instruct
-    token_count: # Optional
-      model_name: Qwen/Qwen3-Next-80B-A3B-Instruct
-      backend: hf
-      params:
-        use_mirror: true
-
-  qwen3_80b_thinking:
-    backend: openai_compatible
-    model_name: qwen3-next-80b-a3b-thinking
-    token_count: # Optional
-      model_name: Qwen/Qwen3-Next-80B-A3B-Thinking
-      backend: hf
-      params:
-        use_mirror: true
-
-  qwen3_max_instruct:
-    backend: openai_compatible
-    model_name: qwen3-max
-    token_count: # Optional
-      model_name: Qwen/Qwen3-Next-80B-A3B-Instruct  # NOTE: We use another model as a substitute.
-      backend: hf
-      params:
-        use_mirror: true
-
-  qwen25_max_instruct:
-    backend: openai_compatible
-    model_name: qwen-max-2025-01-25
-    token_count: # Optional
-      model_name: Qwen/Qwen2.5-72B-Instruct  # NOTE: We use another model as a substitute.
-      backend: hf
-      params:
-        use_mirror: true
+    model_name: qwen-flash
 
 embedding_model:
   default:

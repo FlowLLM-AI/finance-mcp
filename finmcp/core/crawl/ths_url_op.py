@@ -6,12 +6,10 @@ from loguru import logger
 @C.register_op()
 class ThsUrlOp(BaseAsyncOp):
 
-    def __init__(self, url_template: str = "", **kwargs):
+    def __init__(self, tag: str = "", **kwargs):
         super().__init__(**kwargs)
-        self.url_template: str = url_template
+        self.tag: str = tag
 
     async def async_execute(self):
-        code: str = self.context.code
-        self.context.url = self.url_template.format(code=code)
+        self.context.url = f"https://basic.10jqka.com.cn/{self.context.code}/{self.tag}.html#stockpage"
         logger.info(f"{self.name} url={self.context.url}")
-

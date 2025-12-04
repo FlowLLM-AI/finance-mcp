@@ -1,0 +1,18 @@
+flow:
+  tongyi_search:
+    flow_content: TongyiMcpSearchOp()
+
+  bocha_search:
+    flow_content: BochaMcpSearchOp()
+
+external_mcp:
+  tongyi_search:
+    type: sse
+    url: "https://dashscope.aliyuncs.com/api/v1/mcps/WebSearch/sse"
+    headers:
+      Authorization: "Bearer {BAILIAN_MCP_API_KEY}"
+  bochaai_search:
+    type: sse
+    url: "https://dashscope.aliyuncs.com/api/v1/mcps/bochaai_search/sse"
+    headers:
+      Authorization: "Bearer {BAILIAN_MCP_API_KEY}"
