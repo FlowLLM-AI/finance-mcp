@@ -1,9 +1,32 @@
+import shutil
+import subprocess
+
 from crawl4ai import BrowserConfig, CrawlerRunConfig, CacheMode, AsyncWebCrawler
 from flowllm.core.context import C
 from flowllm.core.op import BaseAsyncToolOp
 from flowllm.core.schema import ToolCall
+from loguru import logger
 
-from finmcp.utils import get_random_user_agent
+from ..utils import get_random_user_agent
+
+
+def ensure_playwright_browsers_installed():
+    """Check if Playwright browsers are installed, install if not."""
+    try:
+        from playwright.sync_api import sync_playwright
+        with sync_playwright() as p:
+            # Try to get the executable path, this will fail if not installed
+            logger.info(p.chromium.executable_path)
+
+    except Exception as e:
+        logger.exception(f"Playwright browsers not found, installing... with e={e.args}")
+
+        playwright_path = shutil.which("playwright")
+        if playwright_path:
+            subprocess.run([playwright_path, "install", "chromium"], check=True)
+        else:
+            subprocess.run(["python", "-m", "playwright", "install", "chromium"], check=True)
+        logger.info("Playwright browsers installed successfully.")
 
 
 @C.register_op()
@@ -59,6 +82,8 @@ class Crawl4aiOp(BaseAsyncToolOp):
         )
 
         self.crawler_config = CrawlerRunConfig(cache_mode=CacheMode.BYPASS, verbose=True)
+
+        ensure_playwright_browsers_installed()
 
         async with AsyncWebCrawler(config=self.browser_config) as crawler:
             result = await crawler.arun(url=url, config=self.crawler_config)

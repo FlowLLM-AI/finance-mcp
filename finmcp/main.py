@@ -38,7 +38,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-# pip install --upgrade build twine
-# python -m build

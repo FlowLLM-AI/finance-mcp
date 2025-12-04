@@ -1,4 +1,4 @@
-backend: http
+backend: mcp
 thread_pool_max_workers: 128
 
 mcp:
@@ -133,10 +133,3 @@ embedding_model:
     model_name: text-embedding-v4
     params:
       dimensions: 1024
-
-vector_store:
-  default:
-    backend: elasticsearch
-    embedding_model: default
-#    params:
-#      hosts: "http://localhost:9200"

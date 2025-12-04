@@ -4,12 +4,11 @@ import datetime
 import time
 from typing import List, Dict
 
+from flowllm.core.context import C, BaseContext
+from flowllm.core.enumeration import Role
+from flowllm.core.op import BaseAsyncToolOp
+from flowllm.core.schema import Message, ToolCall
 from loguru import logger
-
-from ...core.context import C, BaseContext
-from ...core.enumeration import Role
-from ...core.op import BaseAsyncToolOp
-from ...core.schema import Message, ToolCall
 
 
 @C.register_op()
@@ -84,10 +83,6 @@ class ReactAgentOp(BaseAsyncToolOp):
 
         return messages
 
-    async def before_chat(self, messages: List[Message]):
-        """Prepare the message history for the LLM."""
-        return messages
-
     async def execute_tool(self, op: BaseAsyncToolOp, tool_call: ToolCall):
         """Execute a tool operation asynchronously using the provided tool call arguments."""
         self.submit_async_task(op.async_call, **tool_call.argument_dict)
@@ -115,8 +110,6 @@ class ReactAgentOp(BaseAsyncToolOp):
                 - should_continue: Boolean indicating whether to continue the loop
                   (False if no tool calls are needed, meaning the agent has finished).
         """
-        # Prepare messages for LLM input (e.g., formatting, filtering)
-        messages = await self.before_chat(messages)
 
         # Invoke LLM with current context and available tools
         assistant_message: Message = await self.llm.achat(
@@ -165,7 +158,7 @@ class ReactAgentOp(BaseAsyncToolOp):
 
         # Phase 1: Submit all tool calls for parallel execution
         for j, tool_call in enumerate(assistant_message.tool_calls):
-            # Track if think_tool was used (for dynamic tool management)
+            # Track if `think_tool` was used (for dynamic tool management)
             if tool_call.name == think_op.tool_call.name:
                 has_think_tool_flag = True
 
@@ -204,7 +197,7 @@ class ReactAgentOp(BaseAsyncToolOp):
             )
 
         # Phase 4: Manage think_tool availability dynamically
-        # If think_tool was used, remove it to prevent repeated use in next step
+        # If `think_tool` was used, remove it to prevent repeated use in next step
         # If it wasn't used, ensure it's available for the next step
         if self.add_think_tool:
             if not has_think_tool_flag:
@@ -226,7 +219,7 @@ class ReactAgentOp(BaseAsyncToolOp):
         - The agent decides no more tools are needed (final answer reached)
         - The maximum number of steps is reached
         """
-        from ..think_tool_op import ThinkToolOp
+        from .think_tool_op import ThinkToolOp
 
         # Initialize think tool operator if needed
         think_op = ThinkToolOp(language=self.language)

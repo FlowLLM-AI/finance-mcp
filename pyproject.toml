@@ -8,6 +8,7 @@ dynamic = ["version"]
 description = "todo"
 authors = [
     { name = "jinli.yl", email = "jinli.yl@alibaba-inc.com" },
+    { name = "taoshuchang.tsc", email = "taoshuchang.tsc@alibaba-inc.com" },
 ]
 license = {file = "LICENSE"}
 readme = "README.md"
