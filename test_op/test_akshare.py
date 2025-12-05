@@ -1,7 +1,7 @@
 import asyncio
 
-from finmcp import FinMcpApp
-from finmcp.core.akshare import AkshareCalculateOp
+from finance_mcp import FinMcpApp
+from finance_mcp.core.akshare import AkshareCalculateOp
 
 
 async def async_main():

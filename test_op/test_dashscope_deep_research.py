@@ -1,7 +1,7 @@
 import asyncio
 
-from finmcp.core.agent.dashscope_deep_research_op import DashscopeDeepResearchOp
-from finmcp.core.utils.common_utils import run_stream_op
+from finance_mcp.core.agent import DashscopeDeepResearchOp
+from finance_mcp.core.utils import run_stream_op
 
 
 async def main():

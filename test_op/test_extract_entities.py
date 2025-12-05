@@ -1,8 +1,8 @@
 import asyncio
 
-from finmcp import FinMcpApp
-from finmcp.core.extract import ExtractEntitiesCodeOp
-from finmcp.core.search import DashscopeSearchOp
+from finance_mcp import FinMcpApp
+from finance_mcp.core.extract import ExtractEntitiesCodeOp
+from finance_mcp.core.search import DashscopeSearchOp
 
 
 async def main():

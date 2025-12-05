@@ -48,7 +48,7 @@ dev = [
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["finmcp*"]
+include = ["finance_mcp*"]
 
 [tool.setuptools.package-data]
 flowllm = [
@@ -56,13 +56,13 @@ flowllm = [
 ]
 
 [tool.setuptools.dynamic]
-version = {attr = "finmcp.__version__"}
+version = {attr = "finance_mcp.__version__"}
 
 [project.urls]
-Homepage = "https://github.com/flowllm-ai/finmcp"
-Documentation = "https://flowllm-ai.github.io/finmcp/"
-Repository = "https://github.com/flowllm-ai/finmcp"
+Homepage = "https://github.com/flowllm-ai/finance-mcp"
+Documentation = "https://flowllm-ai.github.io/finance-mcp/"
+Repository = "https://github.com/flowllm-ai/finance-mcp"
 
 [project.scripts]
-finmcp = "finmcp.main:main"
+finance_mcp = "finance_mcp.main:main"
 
