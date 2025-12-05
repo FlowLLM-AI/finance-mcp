@@ -1,58 +1,45 @@
-import asyncio
 import json
 from typing import Dict, List
 
-from flowllm.context import FlowContext, C
-from flowllm.enumeration.chunk_enum import ChunkEnum
-from flowllm.enumeration.role import Role
-from flowllm.op.base_async_tool_op import BaseAsyncToolOp
-from flowllm.op.gallery.research_complete_op import ResearchCompleteOp
-from flowllm.op.gallery.think_op import ThinkToolOp
-from flowllm.op.search import DashscopeSearchOp
-from flowllm.schema.message import Message
-from flowllm.schema.tool_call import ToolCall
-from flowllm.utils.common_utils import get_datetime
+from flowllm.core.context import C
+from flowllm.core.enumeration import Role, ChunkEnum
+from flowllm.core.op import BaseAsyncToolOp
+from flowllm.core.schema import ToolCall, Message
 from loguru import logger
 
+from finmcp.core.utils import get_datetime
 
-@C.register_op(register_app="FlowLLM")
+
+@C.register_op()
 class ConductResearchOp(BaseAsyncToolOp):
     file_path: str = __file__
 
     def __init__(
         self,
-        max_react_tool_calls: int = 5,
+        max_react_tool_calls: int = 20,
         max_content_len: int = 20000,
-        save_answer: bool = False,
-        llm: str = "qwen3_max_instruct",
-        # llm: str = "qwen3_235b_instruct",
-        # llm: str = "qwen3_80b_instruct",
         language: str = "zh",
         **kwargs,
     ):
-        super().__init__(llm=llm, language=language, save_answer=save_answer, **kwargs)
+        super().__init__(language=language, **kwargs)
         self.max_react_tool_calls: int = max_react_tool_calls
         self.max_content_len: int = max_content_len
 
     def build_tool_call(self) -> ToolCall:
         return ToolCall(
             **{
-                "description": "Conduct in-depth research on a single topic. If research on multiple topics is required, please invoke this tool multiple times.",
+                "description": "Conduct in-depth research on a single topic.",
                 "input_schema": {
                     "research_topic": {
                         "type": "string",
-                        "description": "The topic to research. Should be a single topic, and should be described in high detail (at least a paragraph).",
+                        "description": "The topic to research",
                         "required": True,
                     },
                 },
-            },
-        )
+            })
 
     async def async_execute(self):
-        assert self.ops, "OpenResearchOp requires a search tool"
-        logger.info(f"find {len(self.ops)} ops: {','.join([x.name for x in self.ops])}")
-
-        search_op = self.ops[0]
+        search_op = self.ops.search_op
         assert isinstance(search_op, BaseAsyncToolOp)
         research_system_prompt = self.prompt_format(
             prompt_name="research_system_prompt",
@@ -73,9 +60,8 @@ class ConductResearchOp(BaseAsyncToolOp):
         messages = [Message(role=Role.SYSTEM, content=research_system_prompt)] + messages
 
         tool_dict: Dict[str, BaseAsyncToolOp] = {}
-        for op in self.ops:
+        for op_name, op in self.ops.items():
             assert isinstance(op, BaseAsyncToolOp)
-            assert op.tool_call.name not in tool_dict, f"Duplicate tool name={op.tool_call.name}"
             tool_dict[op.tool_call.name] = op
 
         for i in range(self.max_react_tool_calls):
@@ -144,35 +130,4 @@ class ConductResearchOp(BaseAsyncToolOp):
         chunk_type: ChunkEnum = ChunkEnum.ANSWER if self.save_answer else ChunkEnum.THINK
         content = f"{self.name}.{self.tool_index} content={assistant_message.content}"
         await self.context.add_stream_chunk_and_type(content, chunk_type)
-        self.set_result(assistant_message.content)
-
-
-async def main():
-    from flowllm.app import FlowLLMApp
-
-    async with FlowLLMApp(load_default_config=True):
-
-        context = FlowContext(research_topic="茅台公司未来业绩", stream_queue=asyncio.Queue())
-        op = ConductResearchOp() << DashscopeSearchOp() << ThinkToolOp() << ResearchCompleteOp()
-
-        async def async_call():
-            await op.async_call(context=context)
-            await context.add_stream_done()
-
-        task = asyncio.create_task(async_call())
-
-        while True:
-            stream_chunk = await context.stream_queue.get()
-            if stream_chunk.done:
-                print("\nend")
-                await task
-                break
-
-            else:
-                print(stream_chunk.chunk, end="")
-
-        await task
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
+        self.set_output(assistant_message.content)

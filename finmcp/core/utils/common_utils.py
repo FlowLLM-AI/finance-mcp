@@ -12,7 +12,7 @@ async def run_shell_command(cmd: str, timeout: Optional[float] = 30) -> Tuple[st
         timeout: Timeout in seconds. None for no timeout.
 
     Returns:
-        Tuple of (stdout, stderr, returncode).
+        Tuple of (stdout, stderr, return_code).
 
     Raises:
         asyncio.TimeoutError: If command execution exceeds timeout.

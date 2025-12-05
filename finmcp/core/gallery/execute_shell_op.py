@@ -1,8 +1,9 @@
 from flowllm.core.context import C
 from flowllm.core.op import BaseAsyncToolOp
 from flowllm.core.schema import ToolCall
+from mpmath.ctx_mp_python import return_mpc
 
-from finmcp.core.utils.common_utils import run_shell_command
+from finmcp.core.utils import run_shell_command
 
 
 @C.register_op()
@@ -28,14 +29,14 @@ class ExecuteShellOp(BaseAsyncToolOp):
         assert command, "The 'command' parameter cannot be empty."
 
         # Execute using run_shell_command from common_utils
-        stdout, stderr, returncode = await run_shell_command(command)
+        stdout, stderr, return_code = await run_shell_command(command)
 
         # Build result message
         result_parts = [
             f"Command: {command}",
             f"Output: {stdout if stdout else '(empty)'}",
             f"Error: {stderr if stderr else '(none)'}",
-            f"Exit Code: {returncode if returncode is not None else '(none)'}",
+            f"Exit Code: {return_code if return_code is not None else '(none)'}",
         ]
 
         self.set_output("\n".join(result_parts))
