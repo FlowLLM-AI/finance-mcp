@@ -261,3 +261,19 @@ class ReactAgentOp(BaseAsyncToolOp):
         # Set final output and store full conversation history in metadata
         self.set_output(messages[-1].content)
         self.context.response.metadata["messages"] = messages
+
+
+@C.register_op()
+class ReactSearchOp(ReactAgentOp):
+    """Agent that guarantees a search tool fallback when none are configured."""
+
+    async def build_tool_op_dict(self) -> dict:
+        """Extend parent tools with a default search operator when needed."""
+        tool_op_dict: Dict[str, BaseAsyncToolOp] = await super().build_tool_op_dict()
+        if not tool_op_dict:
+            from ..search.dashscope_search_op import DashscopeSearchOp
+
+            search_op = DashscopeSearchOp()
+            tool_op_dict[search_op.tool_call.name] = search_op
+
+        return tool_op_dict

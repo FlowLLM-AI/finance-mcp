@@ -1,22 +1,18 @@
-import asyncio
 import os
 
-import dashscope
+from flowllm.core.context import C
+from flowllm.core.enumeration import ChunkEnum
+from flowllm.core.op import BaseAsyncToolOp
+from flowllm.core.schema import ToolCall
 from loguru import logger
 
-from flowllm.context.flow_context import FlowContext
-from flowllm.context.service_context import C
-from flowllm.enumeration.chunk_enum import ChunkEnum
-from flowllm.op.base_async_tool_op import BaseAsyncToolOp
-from flowllm.schema.tool_call import ToolCall
 
-
-@C.register_op(register_app="FlowLLM")
+@C.register_op()
 class DashscopeDeepResearchOp(BaseAsyncToolOp):
 
-    def __init__(self, api_key: str = None, save_answer: bool = True, **kwargs):
-        super().__init__(save_answer=save_answer, **kwargs)
-        self.api_key = api_key or os.getenv("DASHSCOPE_API_KEY")
+    def __init__(self, api_key: str | None = None, **kwargs):
+        super().__init__(**kwargs)
+        self.api_key = api_key or os.getenv("DASHSCOPE_API_KEY", "")
 
     def build_tool_call(self) -> ToolCall:
         return ToolCall(
@@ -51,9 +47,10 @@ class DashscopeDeepResearchOp(BaseAsyncToolOp):
         logger.info(f"Starting deep research with messages={messages}")
 
         # Step 1: Get initial response (反问阶段)
-        await self.context.add_stream_chunk_and_type("正在分析研究主题...\n", ChunkEnum.THINK)
+        await self.context.add_stream_string_and_type("正在分析研究主题...\n", ChunkEnum.THINK)
 
         try:
+            import dashscope
             responses = await dashscope.AioGeneration.call(
                 api_key=self.api_key,
                 model="qwen-deep-research",
@@ -63,11 +60,11 @@ class DashscopeDeepResearchOp(BaseAsyncToolOp):
             )
 
             step1_content = await self._process_responses(responses, "第一步：模型反问确认")
-            await self.context.add_stream_chunk_and_type("\n", ChunkEnum.THINK)
+            await self.context.add_stream_string_and_type("\n", ChunkEnum.THINK)
             logger.info(f"step1_content={step1_content}")
 
             # Step 2: Deep research with fixed response
-            await self.context.add_stream_chunk_and_type("开始深入研究...\n", ChunkEnum.THINK)
+            await self.context.add_stream_string_and_type("开始深入研究...\n", ChunkEnum.THINK)
 
             # Use fixed response for follow-up
             messages.extend(
@@ -86,13 +83,13 @@ class DashscopeDeepResearchOp(BaseAsyncToolOp):
             )
 
             final_content = await self._process_responses(responses, "第二步：深入研究")
-            await self.context.add_stream_chunk_and_type("\n", ChunkEnum.ANSWER)
+            await self.context.add_stream_string_and_type("\n", ChunkEnum.ANSWER)
             logger.info(f"final_content={final_content}")
 
         except Exception as e:
             error_msg = f"Deep research failed: {str(e)}"
             logger.exception(error_msg)
-            await self.context.add_stream_chunk_and_type(error_msg, ChunkEnum.ERROR)
+            await self.context.add_stream_string_and_type(error_msg, ChunkEnum.ERROR)
 
     async def _process_responses(self, responses, step_name):
         """Process streaming responses and send as think chunks"""
@@ -110,7 +107,7 @@ class DashscopeDeepResearchOp(BaseAsyncToolOp):
                     error_msg += f", 错误码：{response.code}"
                 if hasattr(response, "message"):
                     error_msg += f", 错误信息：{response.message}"
-                await self.context.add_stream_chunk_and_type(error_msg + "\n", ChunkEnum.THINK)
+                await self.context.add_stream_string_and_type(error_msg + "\n", ChunkEnum.THINK)
                 continue
 
             if hasattr(response, "output") and response.output:
@@ -126,7 +123,7 @@ class DashscopeDeepResearchOp(BaseAsyncToolOp):
                         phase_end_msg = f"\n{current_phase} 阶段完成"
                         if step_name == "第一步：模型反问确认" and current_phase == "answer":
                             phase_end_msg = "\n模型反问阶段完成"
-                        await self.context.add_stream_chunk_and_type(phase_end_msg + "\n", ChunkEnum.THINK)
+                        await self.context.add_stream_string_and_type(phase_end_msg + "\n", ChunkEnum.THINK)
 
                     current_phase = phase
                     phase_content = ""
@@ -136,7 +133,7 @@ class DashscopeDeepResearchOp(BaseAsyncToolOp):
                     phase_start_msg = f"\n进入 {phase} 阶段"
                     if step_name == "第一步：模型反问确认" and phase == "answer":
                         phase_start_msg = "\n进入模型反问阶段"
-                    await self.context.add_stream_chunk_and_type(phase_start_msg + "\n", ChunkEnum.THINK)
+                    await self.context.add_stream_string_and_type(phase_start_msg + "\n", ChunkEnum.THINK)
 
                 # Handle WebResearch phase special information
                 if phase == "WebResearch":
@@ -149,7 +146,7 @@ class DashscopeDeepResearchOp(BaseAsyncToolOp):
                                 goal = research_info["researchGoal"]
                                 if goal:
                                     research_goal += goal
-                                    await self.context.add_stream_chunk_and_type(
+                                    await self.context.add_stream_string_and_type(
                                         f"\n   研究目标: {goal}",
                                         ChunkEnum.THINK,
                                     )
@@ -168,22 +165,22 @@ class DashscopeDeepResearchOp(BaseAsyncToolOp):
                                         if site.get("favicon"):
                                             sites_info += f"        图标: {site['favicon']}\n"
                                         sites_info += "\n"
-                                    await self.context.add_stream_chunk_and_type(sites_info + "\n", ChunkEnum.THINK)
+                                    await self.context.add_stream_string_and_type(sites_info + "\n", ChunkEnum.THINK)
 
                         # Handle WebResultFinished status
                         elif status == "WebResultFinished":
                             finish_msg = f"\n   网络搜索完成，共找到 {len(web_sites)} 个参考信息源"
                             if research_goal:
                                 finish_msg += f"\n   研究目标: {research_goal}"
-                            await self.context.add_stream_chunk_and_type(finish_msg + "\n", ChunkEnum.THINK)
+                            await self.context.add_stream_string_and_type(finish_msg + "\n", ChunkEnum.THINK)
 
                 # Send content as think chunks
                 if content:
                     phase_content += content
                     if "第一步" in step_name:
-                        await self.context.add_stream_chunk_and_type(content, ChunkEnum.THINK)
+                        await self.context.add_stream_string_and_type(content, ChunkEnum.THINK)
                     else:
-                        await self.context.add_stream_chunk_and_type(content, ChunkEnum.ANSWER)
+                        await self.context.add_stream_string_and_type(content, ChunkEnum.ANSWER)
 
                 # Handle status changes
                 if status and status != "typing":
@@ -197,7 +194,7 @@ class DashscopeDeepResearchOp(BaseAsyncToolOp):
                     elif status == "WebResultFinished":
                         status_msg += "\n   → 网络搜索阶段完成（WebResearch阶段）"
 
-                    await self.context.add_stream_chunk_and_type(status_msg + "\n", ChunkEnum.THINK)
+                    await self.context.add_stream_string_and_type(status_msg + "\n", ChunkEnum.THINK)
 
                 # Handle finished status with token usage
                 if status == "finished":
@@ -207,11 +204,11 @@ class DashscopeDeepResearchOp(BaseAsyncToolOp):
                         usage_msg += f"      输入tokens: {usage.get('input_tokens', 0)}\n"
                         usage_msg += f"      输出tokens: {usage.get('output_tokens', 0)}\n"
                         usage_msg += f"      请求ID: {response.get('request_id', '未知')}"
-                        await self.context.add_stream_chunk_and_type(usage_msg + "\n", ChunkEnum.THINK)
+                        await self.context.add_stream_string_and_type(usage_msg + "\n", ChunkEnum.THINK)
 
                 if phase == "KeepAlive":
                     if not keepalive_shown:
-                        await self.context.add_stream_chunk_and_type(
+                        await self.context.add_stream_string_and_type(
                             "当前步骤已经完成，准备开始下一步骤工作\n",
                             ChunkEnum.THINK,
                         )
@@ -223,31 +220,8 @@ class DashscopeDeepResearchOp(BaseAsyncToolOp):
             phase_end_msg = f"\n{current_phase} 阶段完成"
             if step_name == "第一步：模型反问确认" and current_phase == "answer":
                 phase_end_msg = "\n模型反问阶段完成"
-            await self.context.add_stream_chunk_and_type(phase_end_msg + "\n", ChunkEnum.THINK)
+            await self.context.add_stream_string_and_type(phase_end_msg + "\n", ChunkEnum.THINK)
 
         return phase_content
 
 
-async def main():
-    from flowllm.app import FlowLLMApp
-
-    async with FlowLLMApp(load_default_config=True):
-
-        context = FlowContext(query="茅台公司未来业绩", stream_queue=asyncio.Queue())
-        op = DashscopeDeepResearchOp()
-        task = asyncio.create_task(op.async_call(context=context))
-
-        while True:
-            stream_chunk = await context.stream_queue.get()
-            if stream_chunk.done:
-                print("\nend")
-                break
-
-            else:
-                print(stream_chunk.chunk, end="")
-
-        await task
-
-
-if __name__ == "__main__":
-    asyncio.run(main())

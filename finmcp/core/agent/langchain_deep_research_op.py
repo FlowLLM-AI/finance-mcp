@@ -2,8 +2,6 @@ import asyncio
 import json
 from typing import List, Dict
 
-from loguru import logger
-
 from flowllm.context import C, FlowContext
 from flowllm.enumeration.chunk_enum import ChunkEnum
 from flowllm.enumeration.role import Role
@@ -11,6 +9,7 @@ from flowllm.op.base_async_tool_op import BaseAsyncToolOp
 from flowllm.schema.message import Message
 from flowllm.schema.tool_call import ToolCall
 from flowllm.utils.common_utils import get_datetime, extract_content
+from loguru import logger
 
 
 @C.register_op(register_app="FlowLLM")
