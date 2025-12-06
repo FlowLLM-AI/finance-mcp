@@ -35,7 +35,7 @@ async def run_shell_command(cmd: str, timeout: Optional[float] = 30) -> Tuple[st
     )
 
 async def run_stream_op(op: BaseAsyncToolOp, enable_print: bool = True, **kwargs):
-    from finmcp import FinMcpApp
+    from finance_mcp import FinMcpApp
 
     async with FinMcpApp():
         stream_queue = asyncio.Queue()

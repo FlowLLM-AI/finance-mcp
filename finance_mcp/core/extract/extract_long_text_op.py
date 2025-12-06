@@ -3,7 +3,7 @@ from flowllm.core.enumeration import Role
 from flowllm.core.op import BaseAsyncToolOp
 from flowllm.core.schema import ToolCall, Message
 
-from finmcp.core.utils import get_datetime
+from ..utils import get_datetime
 
 
 @C.register_op()

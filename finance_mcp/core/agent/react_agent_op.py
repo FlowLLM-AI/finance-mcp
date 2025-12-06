@@ -25,7 +25,7 @@ class ReactAgentOp(BaseAsyncToolOp):
         **kwargs,
     ):
         """Initialize the agent runtime configuration."""
-        super().__init__(llm=llm, **kwargs)
+        super().__init__(**kwargs)
         self.max_steps: int = max_steps
         self.tool_call_interval: float = tool_call_interval
         self.add_think_tool: bool = add_think_tool

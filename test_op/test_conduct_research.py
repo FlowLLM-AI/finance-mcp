@@ -1,28 +1,19 @@
+import asyncio
+
+from finance_mcp import FinMcpApp
+from finance_mcp.core.agent import ConductResearchOp, ThinkToolOp
+from finance_mcp.core.search import DashscopeSearchOp
+from finance_mcp.core.utils import run_stream_op
+
+
 async def main():
-    from flowllm.app import FlowLLMApp
-
-    async with FlowLLMApp(load_default_config=True):
-
-        context = FlowContext(research_topic="茅台公司未来业绩", stream_queue=asyncio.Queue())
-        op = ConductResearchOp() << DashscopeSearchOp() << ThinkToolOp() << ResearchCompleteOp()
-
-        async def async_call():
-            await op.async_call(context=context)
-            await context.add_stream_done()
-
-        task = asyncio.create_task(async_call())
-
-        while True:
-            stream_chunk = await context.stream_queue.get()
-            if stream_chunk.done:
-                print("\nend")
-                await task
-                break
-
-            else:
-                print(stream_chunk.chunk, end="")
-
-        await task
+    async with FinMcpApp():
+        op = ConductResearchOp()
+        op.ops.search_op = DashscopeSearchOp()
+        op.ops.think_op = ThinkToolOp()
+        research_topic = "茅台公司未来业绩"
+        async for _ in run_stream_op(op, enable_print=True, research_topic=research_topic):
+            pass
 
 
 if __name__ == "__main__":

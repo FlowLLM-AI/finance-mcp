@@ -7,7 +7,7 @@ from flowllm.core.op import BaseAsyncToolOp
 from flowllm.core.schema import ToolCall, Message
 from loguru import logger
 
-from finmcp.core.utils import get_datetime
+from ..utils import get_datetime
 
 
 @C.register_op()
@@ -83,7 +83,7 @@ class ConductResearchOp(BaseAsyncToolOp):
                 assistant_content += f" tool_calls={tool_call_str}"
             assistant_content += "\n\n"
             logger.info(assistant_content)
-            await self.context.add_stream_chunk_and_type(assistant_content, ChunkEnum.THINK)
+            await self.context.add_stream_string_and_type(assistant_content, ChunkEnum.THINK)
 
             if not assistant_message.tool_calls:
                 break
@@ -108,7 +108,7 @@ class ConductResearchOp(BaseAsyncToolOp):
                 )
                 tool_content = f"[{self.name}.{self.tool_index}.{i}.{op.name}] {op.output[:200]}...\n\n"
                 logger.info(tool_content)
-                await self.context.add_stream_chunk_and_type(tool_content, ChunkEnum.TOOL)
+                await self.context.add_stream_string_and_type(tool_content, ChunkEnum.TOOL)
                 if op.tool_call.name == "research_complete":
                     done = True
 
@@ -129,5 +129,5 @@ class ConductResearchOp(BaseAsyncToolOp):
         assistant_message.content = assistant_message.content[: self.max_content_len]
         chunk_type: ChunkEnum = ChunkEnum.ANSWER if self.save_answer else ChunkEnum.THINK
         content = f"{self.name}.{self.tool_index} content={assistant_message.content}"
-        await self.context.add_stream_chunk_and_type(content, chunk_type)
+        await self.context.add_stream_string_and_type(content, chunk_type)
         self.set_output(assistant_message.content)

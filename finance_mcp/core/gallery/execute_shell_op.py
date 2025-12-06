@@ -1,9 +1,8 @@
 from flowllm.core.context import C
 from flowllm.core.op import BaseAsyncToolOp
 from flowllm.core.schema import ToolCall
-from mpmath.ctx_mp_python import return_mpc
 
-from finmcp.core.utils import run_shell_command
+from ..utils import run_shell_command
 
 
 @C.register_op()
