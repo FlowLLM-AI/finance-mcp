@@ -1,6 +1,3 @@
-import sys
-from io import StringIO
-
 from flowllm.core.context import C
 from flowllm.core.enumeration import Role
 from flowllm.core.op import BaseAsyncToolOp
@@ -9,6 +6,7 @@ from flowllm.core.utils import extract_content
 from loguru import logger
 
 from ..utils import get_datetime
+from ..utils.common_utils import exec_code
 
 
 @C.register_op()
@@ -47,27 +45,20 @@ class AkshareCalculateOp(BaseAsyncToolOp):
         )
 
         messages = [Message(role=Role.USER, content=akshare_code_prompt)]
-        old_stdout = sys.stdout
-        redirected_output = sys.stdout = StringIO()
 
-        for i in range(3):
+        def get_code(message: Message):
+            return extract_content(message.content, language_tag="python")
 
-            def get_code(message: Message):
-                return extract_content(message.content, language_tag="python")
+        result_code = await self.llm.achat(messages=messages, callback_fn=get_code)
+        logger.info(f"result_code=\n{result_code}")
 
-            result_code = await self.llm.achat(messages=messages, callback_fn=get_code)
-            logger.info(f"i={i} result_code=\n{result_code}")
-            messages.append(Message(role=Role.ASSISTANT, content=result_code))
+        self.set_output(exec_code(result_code))
 
-            try:
-                exec(result_code)
-                code_result = redirected_output.getvalue()
-                messages.append(Message(role=Role.USER, content=code_result))
-                break
-
-            except Exception as e:
-                logger.info(f"{self.name} encounter exception! error={e.args}")
-                messages.append(Message(role=Role.USER, content=str(e)))
-
-        sys.stdout = old_stdout
-        self.set_output(messages[-1].content)
+    async def async_default_execute(self, e: Exception = None, **kwargs):
+        """Fill outputs with a default failure message when execution fails."""
+        code: str = self.input_dict["code"]
+        query: str = self.input_dict["query"]
+        error_msg = f"Failed to execute code={code} query={query}"
+        if e:
+            error_msg += f": {str(e)}"
+        self.set_output(error_msg)

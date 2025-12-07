@@ -1,11 +1,8 @@
-import asyncio
-import sys
-from io import StringIO
-
 from flowllm.core.context import C
 from flowllm.core.op import BaseAsyncToolOp
 from flowllm.core.schema import ToolCall
-from loguru import logger
+
+from finance_mcp.core.utils.common_utils import exec_code
 
 
 @C.register_op()
@@ -25,22 +22,12 @@ class ExecuteCodeOp(BaseAsyncToolOp):
             },
         )
 
-    def execute(self):
-        old_stdout = sys.stdout
-        redirected_output = sys.stdout = StringIO()
-
-        try:
-            code: str = self.input_dict["code"]
-            exec(code)
-            code_result = redirected_output.getvalue()
-
-        except Exception as e:
-            logger.info(f"{self.name} encounter exception! error={e.args}")
-            code_result = str(e)
-
-        sys.stdout = old_stdout
-        self.set_output(code_result)
-
     async def async_execute(self):
-        loop = asyncio.get_event_loop()
-        await loop.run_in_executor(C.thread_pool, self.execute)  # noqa
+        self.set_output(exec_code(self.input_dict["code"]))
+
+    async def async_default_execute(self, e: Exception = None, **kwargs):
+        """Fill outputs with a default failure message when execution fails."""
+        error_msg = "Failed to execute code "
+        if e:
+            error_msg += f": {str(e)}"
+        self.set_output(error_msg)

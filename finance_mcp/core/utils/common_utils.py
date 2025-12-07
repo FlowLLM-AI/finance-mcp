@@ -1,4 +1,6 @@
 import asyncio
+import contextlib
+from io import StringIO
 from typing import Optional, Tuple
 
 from flowllm.core.op import BaseAsyncToolOp
@@ -60,3 +62,15 @@ async def run_stream_op(op: BaseAsyncToolOp, enable_print: bool = True, **kwargs
                     yield stream_chunk
 
         await task
+
+
+def exec_code(code: str) -> str:
+    try:
+        redirected_output = StringIO()
+        with contextlib.redirect_stdout(redirected_output):
+            exec(code)
+
+        return redirected_output.getvalue()
+
+    except Exception as e:
+        return str(e)
