@@ -39,13 +39,8 @@ class ReactAgentOp(BaseAsyncToolOp):
                     "query": {
                         "type": "string",
                         "description": "query",
-                        "required": False,
-                    },
-                    "messages": {
-                        "type": "array",
-                        "description": "messages",
-                        "required": False,
-                    },
+                        "required": True,
+                    }
                 },
             },
         )
@@ -62,7 +57,7 @@ class ReactAgentOp(BaseAsyncToolOp):
 
     async def build_messages(self) -> List[Message]:
         """Build the initial message history for the LLM."""
-        if "query" in self.input_dict:
+        if "query" in self.input_dict and self.input_dict["query"]:
             query: str = self.input_dict["query"]
             now_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             messages = [

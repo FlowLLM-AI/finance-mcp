@@ -10,25 +10,16 @@ http:
   host: "0.0.0.0"
   port: 8002
 
-
 flow:
-  a_stock_realtime_price:
-    flow_content: AkshareRealtimePriceOp()
-
-  a_stock_calculate:
-    flow_content: AkshareCalculateOp()
-
-  extract_entities_code:
-    flow_content: ExtractEntitiesCodeOp()
-
-  dashscope_search:
-    flow_content: DashscopeSearchOp()
-
-  tavily_search:
-    flow_content: TavilySearchOp()
+  history_calculate:
+    flow_content: HistoryCalculateOp()
+    enable_cache: true
+    cache_expire_hours: 1
 
   crawl_url:
     flow_content: Crawl4aiLongTextOp() >> ExtractLongTextOp()
+    enable_cache: true
+    cache_expire_hours: 1
     description: ""
     input_schema:
       url:
@@ -36,12 +27,45 @@ flow:
         description: "user query"
         required: true
 
+  extract_entities_code:
+    flow_content: ExtractEntitiesCodeOp() << DashscopeSearchOp()
+    enable_cache: true
+    cache_expire_hours: 1
+
+  execute_code:
+    flow_content: ExecuteCodeOp()
+    enable_cache: true
+    cache_expire_hours: 1
+
+  execute_shell:
+    flow_content: ExecuteShellOp()
+    enable_cache: true
+    cache_expire_hours: 1
+
+  dashscope_search:
+    flow_content: DashscopeSearchOp()
+    enable_cache: true
+    cache_expire_hours: 1
+
+  tavily_search:
+    flow_content: TavilySearchOp()
+    enable_cache: true
+    cache_expire_hours: 1
+
+  mock_search:
+    flow_content: MockSearchOp()
+    enable_cache: true
+    cache_expire_hours: 1
+
+  react_agent:
+    flow_content: |
+      ops = [HistoryCalculateOp(), ExtractEntitiesCodeOp() << DashscopeSearchOp(), DashscopeSearchOp()]
+      ReactAgentOp(add_think_tool=True) << ops
+
 llm:
   default:
     backend: openai_compatible
-    model_name: qwen3-30b-a3b-instruct-2507
-    params:
-      temperature: 0.6
+    model_name: qwen-flash
 
   qwen3_30b_instruct:
     backend: openai_compatible
@@ -50,6 +74,8 @@ llm:
   qwen3_30b_thinking:
     backend: openai_compatible
     model_name: qwen3-30b-a3b-thinking-2507
+    params:
+      temperature: 0.6
 
   qwen_flash:
     backend: openai_compatible

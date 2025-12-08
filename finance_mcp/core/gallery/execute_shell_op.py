@@ -12,7 +12,7 @@ class ExecuteShellOp(BaseAsyncToolOp):
     def build_tool_call(self) -> ToolCall:
         return ToolCall(**{
             "name": "ExecuteShell",
-            "description": self.get_prompt("tool_desc"),
+            "description": self.get_prompt("tool_description"),
             "input_schema": {
                 "command": {
                     "type": "string",

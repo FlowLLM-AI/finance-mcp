@@ -1,3 +1,5 @@
+import os
+
 from flowllm.core.context import C
 from flowllm.core.enumeration import Role
 from flowllm.core.op import BaseAsyncToolOp
@@ -10,7 +12,7 @@ from ..utils.common_utils import exec_code
 
 
 @C.register_op()
-class AkshareCalculateOp(BaseAsyncToolOp):
+class HistoryCalculateOp(BaseAsyncToolOp):
     file_path = __file__
 
     def build_tool_call(self) -> ToolCall:
@@ -34,17 +36,29 @@ class AkshareCalculateOp(BaseAsyncToolOp):
 
     async def async_execute(self):
         code: str = self.input_dict["code"]
+        # '00.SZ', '30.SZ', '60.SH', '68.SH', '92.BJ'
+        if code[:2] in ["00", "30"]:
+            code = f"{code}.SZ"
+        elif code[:2] in ["60", "68"]:
+            code = f"{code}.SH"
+        elif code[:2] in ["92"]:
+            code = f"{code}.BJ"
+
         query: str = self.input_dict["query"]
 
-        akshare_code_prompt: str = self.prompt_format(
-            prompt_name="akshare_code_prompt",
+        import tushare as ts
+        ts.pro_api(token=os.getenv("TUSHARE_API_TOKEN", ""))
+
+        code_prompt: str = self.prompt_format(
+            prompt_name="code_prompt",
             code=code,
             query=query,
             current_date=get_datetime(),
-            example=self.get_prompt("akshare_code_example"),
+            example=self.get_prompt("code_example"),
         )
+        logger.info(f"code_prompt=\n{code_prompt}")
 
-        messages = [Message(role=Role.USER, content=akshare_code_prompt)]
+        messages = [Message(role=Role.USER, content=code_prompt)]
 
         def get_code(message: Message):
             return extract_content(message.content, language_tag="python")

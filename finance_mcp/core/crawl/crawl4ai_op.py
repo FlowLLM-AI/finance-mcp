@@ -15,24 +15,6 @@ from loguru import logger
 from ..utils import get_random_user_agent
 
 
-def ensure_playwright_browsers_installed():
-    """Check if Playwright browsers are installed, install if not."""
-    try:
-        from playwright.sync_api import sync_playwright
-
-        with sync_playwright() as p:
-            # Try to get the executable path, this will fail if not installed
-            logger.info(p.chromium.executable_path)
-
-    except Exception as e:
-        logger.exception(f"Playwright browsers not found, installing... with e={e.args}")
-
-        playwright_path = shutil.which("playwright")
-        if playwright_path:
-            subprocess.run([playwright_path, "install", "chromium"], check=True)
-        else:
-            subprocess.run(["python", "-m", "playwright", "install", "chromium"], check=True)
-        logger.info("Playwright browsers installed successfully.")
 
 
 @C.register_op()
@@ -90,7 +72,22 @@ class Crawl4aiOp(BaseAsyncToolOp):
 
         self.crawler_config = CrawlerRunConfig(cache_mode=CacheMode.BYPASS, verbose=True)
 
-        ensure_playwright_browsers_installed()
+        try:
+            from playwright.async_api import async_playwright
+
+            async with async_playwright() as p:
+                logger.info(p.chromium.executable_path)
+
+        except Exception as e:
+            logger.exception(f"Playwright browsers not found, installing... with e={e.args}")
+
+            playwright_path = shutil.which("playwright")
+            if playwright_path:
+                subprocess.run([playwright_path, "install", "chromium"], check=True)
+            else:
+                subprocess.run(["python", "-m", "playwright", "install", "chromium"], check=True)
+            logger.info("Playwright browsers installed successfully.")
+
 
         async with AsyncWebCrawler(config=self.browser_config) as crawler:
             result = await crawler.arun(url=url, config=self.crawler_config)
@@ -110,5 +107,5 @@ class Crawl4aiOp(BaseAsyncToolOp):
 @C.register_op()
 class Crawl4aiLongTextOp(Crawl4aiOp):
     def __init__(self, **kwargs):
-        kwargs.setdefault("output_schema_mapping", {"crawl4ai_result": "long_text"})
+        kwargs.setdefault("output_schema_mapping", {"crawl4ai_long_text_result": "long_text"})
         super().__init__(**kwargs)

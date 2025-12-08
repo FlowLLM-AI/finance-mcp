@@ -7,6 +7,7 @@ from finance_mcp.core.utils.common_utils import exec_code
 
 @C.register_op()
 class ExecuteCodeOp(BaseAsyncToolOp):
+    file_path = __file__
 
     def build_tool_call(self) -> ToolCall:
         return ToolCall(
