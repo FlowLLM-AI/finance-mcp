@@ -1,11 +1,9 @@
-import datetime
-
 from datetime import datetime, timedelta
 from typing import List, Optional
 
 
 def get_datetime(time_ft: str = "%Y-%m-%d %H:%M:%S"):
-    now = datetime.datetime.now()
+    now = datetime.now()
     formatted_time = now.strftime(time_ft)
     return formatted_time
 

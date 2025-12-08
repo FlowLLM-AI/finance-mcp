@@ -1,33 +1,28 @@
-import asyncio
 import json
 from typing import List, Dict
 
-from flowllm.context import C, FlowContext
-from flowllm.enumeration.chunk_enum import ChunkEnum
-from flowllm.enumeration.role import Role
-from flowllm.op.base_async_tool_op import BaseAsyncToolOp
-from flowllm.schema.message import Message
-from flowllm.schema.tool_call import ToolCall
-from flowllm.utils.common_utils import get_datetime, extract_content
+from flowllm.core.context import C
+from flowllm.core.enumeration import ChunkEnum, Role
+from flowllm.core.op import BaseAsyncToolOp
+from flowllm.core.schema import ToolCall, Message, FlowStreamChunk
+from flowllm.core.utils import extract_content
 from loguru import logger
 
+from finance_mcp.core.utils import get_datetime
 
-@C.register_op(register_app="FlowLLM")
+
+@C.register_op()
 class LangchainDeepResearchOp(BaseAsyncToolOp):
     file_path: str = __file__
 
     def __init__(
         self,
-        llm: str = "qwen3_max_instruct",
-        # llm: str = "qwen3_235b_instruct",
-        # llm: str = "qwen3_80b_instruct",
         enable_research_brief: bool = True,
         max_concurrent_research_units: int = 3,
         max_researcher_iterations: int = 5,
-        language: str = "zh",
         **kwargs,
     ):
-        super().__init__(llm=llm, language=language, **kwargs)
+        super().__init__(**kwargs)
         self.enable_research_brief: bool = enable_research_brief
         self.max_concurrent_research_units: int = max_concurrent_research_units
         self.max_researcher_iterations: int = max_researcher_iterations
@@ -52,7 +47,7 @@ class LangchainDeepResearchOp(BaseAsyncToolOp):
         )
 
     async def async_execute(self):
-        await self.context.add_stream_chunk_and_type("开始深度研究", ChunkEnum.THINK)
+        await self.context.add_stream_string_and_type("开始深度研究", ChunkEnum.THINK)
         if self.input_dict.get("query"):
             query: str = self.input_dict.get("query")
             messages: List[Message] = [Message(role=Role.USER, content=query)]
@@ -83,7 +78,7 @@ class LangchainDeepResearchOp(BaseAsyncToolOp):
         logger.info(f"research_brief={research_brief}")
 
         tool_dict: Dict[str, BaseAsyncToolOp] = {}
-        for op in self.ops:
+        for _, op in self.ops.items():
             assert isinstance(op, BaseAsyncToolOp)
             assert op.tool_call.name not in tool_dict, f"Duplicate tool name={op.tool_call.name}"
             tool_dict[op.tool_call.name] = op
@@ -120,7 +115,7 @@ class LangchainDeepResearchOp(BaseAsyncToolOp):
                 assistant_content += f" tool_calls={tool_call_str}"
             assistant_content += "\n\n"
             logger.info(assistant_content)
-            await self.context.add_stream_chunk_and_type(assistant_content, ChunkEnum.THINK)
+            await self.context.add_stream_string_and_type(assistant_content, ChunkEnum.THINK)
 
             if not assistant_message.tool_calls:
                 break
@@ -151,7 +146,7 @@ class LangchainDeepResearchOp(BaseAsyncToolOp):
                 )
                 tool_content = f"[{self.name}.{i}.{op.name}] {op.output[:200]}...\n\n"
                 logger.info(tool_content)
-                await self.context.add_stream_chunk_and_type(tool_content, ChunkEnum.TOOL)
+                await self.context.add_stream_string_and_type(tool_content, ChunkEnum.TOOL)
 
                 if op.tool_call.name == "conduct_research":
                     findings.append(op.output)
@@ -172,46 +167,7 @@ class LangchainDeepResearchOp(BaseAsyncToolOp):
         )
         report_generation_messages = [Message(role=Role.USER, content=final_report_generation_prompt)]
 
-        async for chunk, chunk_type in self.llm.astream_chat(report_generation_messages):  # noqa
-            if chunk_type in [ChunkEnum.ANSWER, ChunkEnum.THINK, ChunkEnum.ERROR]:
-                await self.context.add_stream_chunk_and_type(str(chunk), chunk_type)
-
-
-async def main():
-    from flowllm.app import FlowLLMApp
-    from flowllm.op.deep_research import ConductResearchOp
-    from flowllm.op.search import DashscopeSearchOp
-    from flowllm.op.gallery import ThinkToolOp
-    from flowllm.op.gallery import ResearchCompleteOp
-
-    async with FlowLLMApp(load_default_config=True):
-        context = FlowContext(query="茅台公司未来业绩", stream_queue=asyncio.Queue())
-
-        op = (
-            LangchainDeepResearchOp()
-            << (ConductResearchOp() << DashscopeSearchOp() << ThinkToolOp() << ResearchCompleteOp())
-            << ThinkToolOp()
-            << ResearchCompleteOp()
-        )
-
-        async def async_call():
-            await op.async_call(context=context)
-            await context.add_stream_done()
-
-        task = asyncio.create_task(async_call())
-
-        while True:
-            stream_chunk = await context.stream_queue.get()
-            if stream_chunk.done:
-                print("\nend")
-                await task
-                break
-
-            else:
-                print(stream_chunk.chunk, end="")
-
-        await task
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
+        async for stream_chunk in self.llm.astream_chat(report_generation_messages):  # noqa
+            assert isinstance(stream_chunk, FlowStreamChunk)
+            if stream_chunk.chunk_type in [ChunkEnum.ANSWER, ChunkEnum.THINK, ChunkEnum.ERROR, ChunkEnum.TOOL]:
+                await self.context.add_stream_chunk(stream_chunk)

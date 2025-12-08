@@ -27,6 +27,15 @@ flow:
   tavily_search:
     flow_content: TavilySearchOp()
 
+  crawl_url:
+    flow_content: Crawl4aiLongTextOp() >> ExtractLongTextOp()
+    description: ""
+    input_schema:
+      url:
+        type: string
+        description: "user query"
+        required: true
+
 llm:
   default:
     backend: openai_compatible
