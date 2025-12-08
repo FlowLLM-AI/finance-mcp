@@ -1,8 +1,0 @@
-backend: http
-
-flow:
-  dashscope_deep_research:
-    flow_content: DashscopeDeepResearchOp()
-
-  langchain_deep_research:
-    flow_content: LangchainDeepResearchOp()

@@ -128,6 +128,5 @@ class ConductResearchOp(BaseAsyncToolOp):
         assistant_message = await self.llm.achat(messages=merge_messages)
         assistant_message.content = assistant_message.content[: self.max_content_len]
         chunk_type: ChunkEnum = ChunkEnum.ANSWER if self.save_answer else ChunkEnum.THINK
-        content = f"{self.name}.{self.tool_index} content={assistant_message.content}"
-        await self.context.add_stream_string_and_type(content, chunk_type)
+        await self.context.add_stream_string_and_type(assistant_message.content, chunk_type)
         self.set_output(assistant_message.content)

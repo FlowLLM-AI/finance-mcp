@@ -1,0 +1,20 @@
+backend: http
+
+flow:
+  dashscope_deep_research:
+    flow_content: DashscopeDeepResearchOp()
+    stream: true
+
+  langchain_deep_research:
+    flow_content: |
+      cr_op = ConductResearchOp() << {"search_op": DashscopeSearchOp(), "think_op": ThinkToolOp()}
+      LangchainDeepResearchOp() << [cr_op, ThinkToolOp(), ResearchCompleteOp()]
+    stream: true
+
+  conduct_research:
+    flow_content: |
+      op = ConductResearchOp()
+      op.ops.search_op = DashscopeSearchOp()
+      op.ops.think_op = ThinkToolOp()
+      op
+    stream: true
