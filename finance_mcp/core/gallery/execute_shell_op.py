@@ -1,3 +1,10 @@
+"""Asynchronous tool operation for executing shell commands.
+
+This module exposes :class:`ExecuteShellOp`, which allows FlowLLM agents
+to run shell commands in a controlled way and capture their output,
+error stream, and exit code as structured text.
+"""
+
 from flowllm.core.context import C
 from flowllm.core.op import BaseAsyncToolOp
 from flowllm.core.schema import ToolCall
@@ -7,6 +14,13 @@ from ..utils import run_shell_command
 
 @C.register_op()
 class ExecuteShellOp(BaseAsyncToolOp):
+    """Run a shell command asynchronously and return its result.
+
+    The operation expects a single string argument named ``command``
+    and returns a human-readable multi-line summary including the
+    command, stdout, stderr, and exit code.
+    """
+
     file_path = __file__
 
     def build_tool_call(self) -> ToolCall:

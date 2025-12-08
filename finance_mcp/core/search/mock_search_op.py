@@ -16,6 +16,13 @@ class MockSearchOp(BaseAsyncToolOp):
     file_path: str = __file__
 
     def build_tool_call(self) -> ToolCall:
+        """Build the tool call schema describing the mock search tool.
+
+        Returns:
+            ToolCall: Definition containing description and input schema
+            for the ``query`` parameter.
+        """
+
         return ToolCall(
             **{
                 "description": self.get_prompt("tool_description"),
@@ -30,6 +37,14 @@ class MockSearchOp(BaseAsyncToolOp):
         )
 
     async def async_execute(self):
+        """Generate mock search results using an LLM.
+
+        The method builds a small conversation where the system message
+        instructs the model to return JSON-formatted search results, and
+        the user message contains the formatted query. The JSON
+        structure is then extracted and pretty-printed.
+        """
+
         query: str = self.input_dict["query"]
         if not query:
             answer = "query is empty, no results found."

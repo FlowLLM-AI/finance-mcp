@@ -1,3 +1,10 @@
+"""Tavily-based web search operation.
+
+This module defines :class:`TavilySearchOp`, an asynchronous tool
+operation that uses the Tavily API to perform web search and optional
+content extraction with character-length constraints.
+"""
+
 import json
 import os
 
@@ -9,6 +16,8 @@ from loguru import logger
 
 @C.register_op()
 class TavilySearchOp(BaseAsyncToolOp):
+    """Asynchronous web search operation backed by the Tavily API."""
+
     file_path: str = __file__
 
     def __init__(
@@ -18,6 +27,19 @@ class TavilySearchOp(BaseAsyncToolOp):
         all_max_char_count: int = 50000,
         **kwargs,
     ):
+        """Create a new Tavily search operation.
+
+        Args:
+            enable_extract: Whether to call the Tavily extract endpoint
+                and return page content in addition to metadata.
+            item_max_char_count: Maximum characters to keep per item
+                when extraction is enabled.
+            all_max_char_count: Global character budget across all
+                extracted items.
+            **kwargs: Extra keyword arguments forwarded to
+                :class:`BaseAsyncToolOp`.
+        """
+
         super().__init__(**kwargs)
         self.enable_extract: bool = enable_extract
         self.item_max_char_count: int = item_max_char_count
@@ -53,6 +75,13 @@ class TavilySearchOp(BaseAsyncToolOp):
         return self._client
 
     async def async_execute(self):
+        """Execute the Tavily web search for the given query.
+
+        The query is read from ``input_dict['query']`` and the result is
+        either the raw Tavily search output or a post-processed mapping
+        with optional extracted content, depending on ``enable_extract``.
+        """
+
         query: str = self.input_dict["query"]
         logger.info(f"tavily.query: {query}")
 

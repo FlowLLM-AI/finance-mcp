@@ -1,16 +1,30 @@
+"""Helpers for generating realistic HTTP User-Agent header values.
+
+The main entry point is :func:`get_random_user_agent`, which randomly chooses
+between a curated list of recent browser user agents and dynamically assembled
+variants. This is useful when scraping or calling HTTP APIs that expect
+browser-like traffic.
+"""
+
 import random
 from typing import List
 
 
 def get_random_user_agent() -> str:
+    """Return a random, realistic browser User-Agent string.
+
+    The function randomly selects between a static, curated list and a
+    dynamically generated value, providing reasonable diversity while still
+    looking like a modern browser.
+    """
+
     if random.choice([True, False]):
         return _get_predefined_user_agent()
-    else:
-        return _generate_dynamic_user_agent()
+    return _generate_dynamic_user_agent()
 
 
 def _get_predefined_user_agent() -> str:
-    """Get a user agent from predefined list."""
+    """Get a User-Agent string from a curated list of recent browsers."""
     user_agents: List[str] = [
         # Chrome on Windows
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
@@ -37,9 +51,13 @@ def _get_predefined_user_agent() -> str:
 
 
 def _generate_dynamic_user_agent() -> str:
-    """Generate a user agent with random component combinations."""
+    """Generate a User-Agent string from randomized components.
 
-    # 操作系统组合
+    The resulting User-Agent aims to resemble a realistic combination of
+    operating system, browser family, and version numbers.
+    """
+
+    # Example operating system combinations.
     os_combinations = [
         "Windows NT 10.0; Win64; x64",
         "Windows NT 11.0; Win64; x64",
@@ -51,7 +69,7 @@ def _generate_dynamic_user_agent() -> str:
         "X11; Linux i686",
     ]
 
-    # Chrome版本
+    # Candidate Chrome major version numbers.
     chrome_versions = [
         "120.0.0.0",
         "119.0.0.0",
@@ -62,14 +80,14 @@ def _generate_dynamic_user_agent() -> str:
         "115.0.0.0",
     ]
 
-    # WebKit版本
+    # Candidate WebKit build versions.
     webkit_versions = [
         "537.36",
         "537.35",
         "537.34",
     ]
 
-    # Firefox版本
+    # Candidate Firefox major version numbers.
     firefox_versions = [
         "121.0",
         "120.0",
@@ -78,14 +96,14 @@ def _generate_dynamic_user_agent() -> str:
         "117.0",
     ]
 
-    # Safari版本
+    # Candidate Safari versions (WebKit version, Safari version).
     safari_versions = [
         ("605.1.15", "17.2"),
         ("605.1.15", "17.1"),
         ("605.1.15", "16.6"),
     ]
 
-    # 随机选择浏览器类型
+    # Randomly choose a browser family, then construct a compatible UA string.
     browser_type = random.choice(["chrome", "firefox", "safari", "edge"])
     os_string = random.choice(os_combinations)
 
@@ -110,10 +128,10 @@ def _generate_dynamic_user_agent() -> str:
     elif browser_type == "edge" and "Windows" in os_string:
         chrome_version = random.choice(chrome_versions)
         webkit_version = random.choice(webkit_versions)
-        edge_version = chrome_version  # Edge版本通常与Chrome版本一致
+        edge_version = chrome_version  # Edge version typically mirrors Chrome.
         return f"Mozilla/5.0 ({os_string}) AppleWebKit/{webkit_version} (KHTML, like Gecko) Chrome/{chrome_version} Safari/{webkit_version} Edg/{edge_version}"
 
-    # 如果组合不匹配，回退到Chrome
+    # Fallback to a Chrome-style UA if the above combinations do not match.
     chrome_version = random.choice(chrome_versions)
     webkit_version = random.choice(webkit_versions)
     return f"Mozilla/5.0 ({os_string}) AppleWebKit/{webkit_version} (KHTML, like Gecko) Chrome/{chrome_version} Safari/{webkit_version}"

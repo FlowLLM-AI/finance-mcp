@@ -31,6 +31,17 @@ class DashscopeSearchOp(BaseAsyncToolOp):
         enable_role_prompt: bool = True,
         **kwargs,
     ):
+        """Initialize the Dashscope search operation.
+
+        Args:
+            model: Name of the Dashscope model to use.
+            search_strategy: Web search strategy, such as ``"max"``.
+            enable_role_prompt: Whether to wrap the user query with an
+                additional role prompt from the prompt template.
+            **kwargs: Extra keyword arguments forwarded to
+                :class:`BaseAsyncToolOp`.
+        """
+
         super().__init__(**kwargs)
 
         self.model: str = model
@@ -41,6 +52,8 @@ class DashscopeSearchOp(BaseAsyncToolOp):
         # https://help.aliyun.com/zh/model-studio/web-search
 
     def build_tool_call(self) -> ToolCall:
+        """Build the tool call schema for the Dashscope search op."""
+
         return ToolCall(
             **{
                 "description": self.get_prompt("tool_description"),
@@ -55,6 +68,13 @@ class DashscopeSearchOp(BaseAsyncToolOp):
         )
 
     async def async_execute(self):
+        """Execute a Dashscope web search for the given query.
+
+        The method prepares the user query (optionally using a role
+        prompt), calls the Dashscope generation API with search enabled,
+        and returns the natural-language answer produced by the model.
+        """
+
         query: str = self.input_dict["query"]
 
         if self.enable_cache:
