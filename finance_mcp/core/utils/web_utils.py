@@ -1,3 +1,6 @@
+# flake8: noqa: E501
+# pylint: disable=line-too-long
+
 """Helpers for generating realistic HTTP User-Agent header values.
 
 The main entry point is :func:`get_random_user_agent`, which randomly chooses

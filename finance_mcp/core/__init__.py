@@ -1,3 +1,5 @@
+# flake8: noqa: F401
+
 """Core building blocks of the Finance MCP package.
 
 This package groups together the domain logic used by :mod:`finance_mcp`,

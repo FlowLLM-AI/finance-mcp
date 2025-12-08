@@ -8,8 +8,9 @@ CLI arguments are forwarded directly to the underlying FlowLLM application.
 
 import sys
 
-from .config import ConfigParser
 from flowllm.core.application import Application
+
+from .config import ConfigParser
 
 
 class FinanceMcpApp(Application):

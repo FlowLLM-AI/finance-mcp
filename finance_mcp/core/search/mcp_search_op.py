@@ -29,6 +29,8 @@ class TongyiMcpSearchOp(BaseMcpOp):
             },
         )
         super().__init__(**kwargs)
+
+
 @C.register_op()
 class BochaMcpSearchOp(BaseMcpOp):
     """Search operation that calls the Bocha MCP web search tool."""

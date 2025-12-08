@@ -48,6 +48,7 @@ class TavilySearchOp(BaseAsyncToolOp):
         self._client = None
 
     def build_tool_call(self) -> ToolCall:
+        """Build the tool call schema for the Tavily web search tool."""
         return ToolCall(
             **{
                 "description": "Use search keywords to retrieve relevant information from the internet.",

@@ -53,37 +53,42 @@ def test_http_service(endpoint: str, data: str) -> None:
     logger.info("=" * 80)
 
     # Execute curl command with streaming output so we can inspect chunks
-    process = subprocess.Popen(
+    with subprocess.Popen(
         curl_cmd,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
         bufsize=-1,
-    )
+    ) as process:
 
-    # Read and print output in chunks for real-time streaming feedback.
-    chunk_size = 1024
-    while True:
-        chunk = process.stdout.read(chunk_size)
-        if not chunk:
-            if process.poll() is not None:
-                break
-            time.sleep(0.01)
-            continue
+        # Read and print output in chunks for real-time streaming feedback.
+        chunk_size = 1024
+        while True:
+            chunk = process.stdout.read(chunk_size)
+            if not chunk:
+                if process.poll() is not None:
+                    break
+                time.sleep(0.01)
+                continue
 
-        print(chunk, end="", flush=True)
+            print(chunk, end="", flush=True)
 
-        # for x in chunk:
-        #     print(x, end='', flush=True)
-        #     time.sleep(0.01)
+            # for x in chunk:
+            #     print(x, end='', flush=True)
+            #     time.sleep(0.01)
 
-    process.wait()
-    logger.info("\n" + "=" * 80)
-    logger.info(f"Curl command completed with return code: {process.returncode}")
+        process.wait()
+        logger.info("\n" + "=" * 80)
+        logger.info(f"Curl command completed with return code: {process.returncode}")
 
 
 def main() -> None:
-    """Start the finance-mcp HTTP service and exercise selected endpoints."""
+    """
+    curl -X POST http://0.0.0.0:8002/conduct_research \
+      -H "Content-Type: application/json" \
+      -d '{"research_topic": "茅台怎么样？"}'
+    Start the finance-mcp HTTP service and exercise selected endpoints.
+    """
 
     with FinanceMcpServiceRunner(
         service_args,
@@ -93,12 +98,6 @@ def main() -> None:
         logger.info(f"Service is running on port {service.port}")
         logger.info("Waiting a moment for service to fully initialize...")
         time.sleep(2)  # Give service a moment to fully initialize
-
-        """
-curl -X POST http://0.0.0.0:8002/conduct_research \
-  -H "Content-Type: application/json" \
-  -d '{"research_topic": "茅台怎么样？"}'
-        """
 
         for endpoint, data in [
             # ("conduct_research", {"research_topic": "茅台怎么样？"}),

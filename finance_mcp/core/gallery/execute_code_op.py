@@ -55,7 +55,7 @@ class ExecuteCodeOp(BaseAsyncToolOp):
 
         self.set_output(exec_code(self.input_dict["code"]))
 
-    async def async_default_execute(self, e: Exception = None, **kwargs):
+    async def async_default_execute(self, e: Exception = None, **_kwargs):
         """Fill outputs with a default failure message when execution fails."""
         error_msg = "Failed to execute code "
         if e:

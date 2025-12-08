@@ -13,6 +13,8 @@ from loguru import logger
 
 @C.register_op()
 class MockSearchOp(BaseAsyncToolOp):
+    """Asynchronous mock search tool that generates LLM-based results."""
+
     file_path: str = __file__
 
     def build_tool_call(self) -> ToolCall:

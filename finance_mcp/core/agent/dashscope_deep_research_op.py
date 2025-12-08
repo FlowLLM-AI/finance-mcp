@@ -274,4 +274,3 @@ class DashscopeDeepResearchOp(BaseAsyncToolOp):
             await self.context.add_stream_string_and_type(phase_end_msg + "\n", ChunkEnum.THINK)
 
         return phase_content
-

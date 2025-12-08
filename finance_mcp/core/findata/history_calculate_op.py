@@ -101,7 +101,7 @@ class HistoryCalculateOp(BaseAsyncToolOp):
         # Execute the generated Python code and set the execution result.
         self.set_output(exec_code(result_code))
 
-    async def async_default_execute(self, e: Exception = None, **kwargs):
+    async def async_default_execute(self, e: Exception = None, **_kwargs):
         """Fill outputs with a default failure message when execution fails."""
 
         code: str = self.input_dict["code"]

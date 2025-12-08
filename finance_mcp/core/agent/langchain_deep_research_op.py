@@ -224,4 +224,3 @@ class LangchainDeepResearchOp(BaseAsyncToolOp):
             assert isinstance(stream_chunk, FlowStreamChunk)
             if stream_chunk.chunk_type in [ChunkEnum.ANSWER, ChunkEnum.THINK, ChunkEnum.ERROR, ChunkEnum.TOOL]:
                 await self.context.add_stream_chunk(stream_chunk)
-

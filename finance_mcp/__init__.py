@@ -1,3 +1,6 @@
+# flake8: noqa: E402
+# pylint: disable=wrong-import-position
+
 """Public package interface for the Finance MCP library.
 
 This module exposes the high-level objects that users are expected to import

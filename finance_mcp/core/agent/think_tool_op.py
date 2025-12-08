@@ -50,4 +50,3 @@ class ThinkToolOp(BaseAsyncToolOp):
             self.set_output(self.input_dict["reflection"])
         else:
             self.set_output(self.get_prompt("reflection_output"))
-

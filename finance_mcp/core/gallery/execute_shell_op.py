@@ -24,6 +24,7 @@ class ExecuteShellOp(BaseAsyncToolOp):
     file_path = __file__
 
     def build_tool_call(self) -> ToolCall:
+        """Build the tool call schema for executing shell commands."""
         return ToolCall(
             **{
                 "name": "ExecuteShell",
@@ -56,7 +57,7 @@ class ExecuteShellOp(BaseAsyncToolOp):
 
         self.set_output("\n".join(result_parts))
 
-    async def async_default_execute(self, e: Exception = None, **kwargs):
+    async def async_default_execute(self, e: Exception = None, **_kwargs):
         """Fill outputs with a default failure message when execution fails."""
         command: str = self.input_dict.get("command", "").strip()
         error_msg = f'Failed to execute shell command "{command}"'

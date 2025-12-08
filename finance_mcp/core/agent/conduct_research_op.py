@@ -117,7 +117,7 @@ class ConductResearchOp(BaseAsyncToolOp):
         # Build a mapping from tool name to operator instance so the
         # LLM can address tools by name in its tool calls.
         tool_dict: Dict[str, BaseAsyncToolOp] = {}
-        for op_name, op in self.ops.items():
+        for _, op in self.ops.items():
             assert isinstance(op, BaseAsyncToolOp)
             tool_dict[op.tool_call.name] = op
 
@@ -200,4 +200,3 @@ class ConductResearchOp(BaseAsyncToolOp):
         chunk_type: ChunkEnum = ChunkEnum.ANSWER if self.save_answer else ChunkEnum.THINK
         await self.context.add_stream_string_and_type(assistant_message.content, chunk_type)
         self.set_output(assistant_message.content)
-
