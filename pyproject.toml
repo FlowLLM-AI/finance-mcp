@@ -5,14 +5,14 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "finance-mcp"
 dynamic = ["version"]
-description = "todo"
+description = "A finance MCP server enhanced by LLMs, web search tools, and Crawl4AI for financial research and analysis."
 authors = [
     { name = "jinli.yl", email = "jinli.yl@alibaba-inc.com" },
     { name = "taoshuchang.tsc", email = "taoshuchang.tsc@alibaba-inc.com" },
 ]
 license = {file = "LICENSE"}
 readme = "README.md"
-keywords = ["fin", "mcp"]
+keywords = ["finance", "research", "analysis", "agent", "mcp", "tushare", "flowllm", "crawl4ai"]
 requires-python = ">=3.10"
 
 classifiers = [
