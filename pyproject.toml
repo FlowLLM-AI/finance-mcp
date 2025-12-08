@@ -64,5 +64,5 @@ Documentation = "https://flowllm-ai.github.io/finance-mcp/"
 Repository = "https://github.com/flowllm-ai/finance-mcp"
 
 [project.scripts]
-finance_mcp = "finance_mcp.main:main"
+finance-mcp = "finance_mcp.main:main"
 

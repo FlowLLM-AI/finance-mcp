@@ -1,16 +1,16 @@
 import os
 
-os.environ["FLOW_APP_NAME"] = "FinMCP"
+os.environ["FLOW_APP_NAME"] = "FinanceMCP"
 
 from . import core
 from . import config
 
-from .main import FinMcpApp
+from .main import FinanceMcpApp
 
 __all__ = [
     "core",
     "config",
-    "FinMcpApp",
+    "FinanceMcpApp",
 ]
 
 __version__ = "0.1.0"

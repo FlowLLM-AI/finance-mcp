@@ -1,13 +1,13 @@
 import asyncio
 
-from finance_mcp import FinMcpApp
+from finance_mcp import FinanceMcpApp
 from finance_mcp.core.agent import ConductResearchOp, ThinkToolOp
 from finance_mcp.core.search import DashscopeSearchOp
 from finance_mcp.core.utils import run_stream_op
 
 
 async def main():
-    async with FinMcpApp():
+    async with FinanceMcpApp():
         op = ConductResearchOp()
         op.ops.search_op = DashscopeSearchOp()
         op.ops.think_op = ThinkToolOp()

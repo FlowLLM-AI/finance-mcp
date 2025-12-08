@@ -4,7 +4,7 @@ from .config import ConfigParser
 from flowllm.core.application import Application
 
 
-class FinMcpApp(Application):
+class FinanceMcpApp(Application):
 
     def __init__(
         self,
@@ -31,7 +31,7 @@ class FinMcpApp(Application):
 
 
 def main():
-    with FinMcpApp(*sys.argv[1:]) as app:
+    with FinanceMcpApp(*sys.argv[1:]) as app:
         app.run_service()
 
 
