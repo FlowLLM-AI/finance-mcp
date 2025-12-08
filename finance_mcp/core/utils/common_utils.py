@@ -36,6 +36,7 @@ async def run_shell_command(cmd: str, timeout: Optional[float] = 30) -> Tuple[st
         process.returncode,
     )
 
+
 async def run_stream_op(op: BaseAsyncToolOp, enable_print: bool = True, **kwargs):
     from finance_mcp import FinanceMcpApp
 

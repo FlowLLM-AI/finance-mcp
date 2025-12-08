@@ -1,3 +1,11 @@
+"""Dashscope-based deep research operator.
+
+This module provides :class:`DashscopeDeepResearchOp`, a thin wrapper
+around the Dashscope ``qwen-deep-research`` model which streams
+intermediate phases, web research information and final answers into
+the FlowLLM context.
+"""
+
 import os
 
 from flowllm.core.context import C
@@ -9,12 +17,34 @@ from loguru import logger
 
 @C.register_op()
 class DashscopeDeepResearchOp(BaseAsyncToolOp):
+    """Async tool op that delegates deep research to Dashscope.
+
+    The operator converts the input query or messages into the format
+    expected by the Dashscope ``qwen-deep-research`` model and streams
+    structured progress information back into the context.
+    """
 
     def __init__(self, api_key: str | None = None, **kwargs):
+        """Initialize the tool with an optional API key.
+
+        Args:
+            api_key: Dashscope API key. If omitted, the value is read
+                from the ``DASHSCOPE_API_KEY`` environment variable.
+            **kwargs: Additional keyword arguments forwarded to
+                :class:`BaseAsyncToolOp`.
+        """
+
         super().__init__(**kwargs)
         self.api_key = api_key or os.getenv("DASHSCOPE_API_KEY", "")
 
     def build_tool_call(self) -> ToolCall:
+        """Return tool metadata and input schema for FlowLLM.
+
+        The input can be provided either as a single ``query`` string
+        or as a list of conversation ``messages`` from which the last
+        user message is extracted as the query.
+        """
+
         return ToolCall(
             **{
                 "description": "Use Dashscope deep research to conduct comprehensive research on a topic",
@@ -34,12 +64,23 @@ class DashscopeDeepResearchOp(BaseAsyncToolOp):
         )
 
     async def async_execute(self):
+        """Execute the two-stage deep research workflow.
+
+        The workflow consists of:
+
+        1. A first pass where the model may ask clarifying questions and
+           refine the research goal.
+        2. A second pass that performs in-depth research and produces a
+           detailed report.
+        """
+
+        # Normalize input into a simple user message list for Dashscope.
         if self.input_dict.get("query"):
             query: str = self.input_dict.get("query")
             messages = [{"role": "user", "content": query}]
         elif self.input_dict.get("messages"):
-            messages: list = self.input_dict.get("messages")
-            query: str = messages[-1].get("content", "")
+            messages = self.input_dict.get("messages")
+            query = messages[-1].get("content", "")
             messages = [{"role": "user", "content": query}]
         else:
             raise RuntimeError("query or messages is required")
@@ -51,6 +92,9 @@ class DashscopeDeepResearchOp(BaseAsyncToolOp):
 
         try:
             import dashscope
+
+            # First stage: the model may ask clarifying questions and
+            # refine the research scope.
             responses = await dashscope.AioGeneration.call(
                 api_key=self.api_key,
                 model="qwen-deep-research",
@@ -71,7 +115,7 @@ class DashscopeDeepResearchOp(BaseAsyncToolOp):
                 [
                     {"role": "assistant", "content": step1_content},
                     {"role": "user", "content": "给我一份带逻辑推理的详细报告"},
-                ]
+                ],
             )
 
             responses = await dashscope.AioGeneration.call(
@@ -86,13 +130,20 @@ class DashscopeDeepResearchOp(BaseAsyncToolOp):
             await self.context.add_stream_string_and_type("\n", ChunkEnum.ANSWER)
             logger.info(f"final_content={final_content}")
 
-        except Exception as e:
+        except Exception as e:  # pragma: no cover - defensive logging
             error_msg = f"Deep research failed: {str(e)}"
             logger.exception(error_msg)
             await self.context.add_stream_string_and_type(error_msg, ChunkEnum.ERROR)
 
     async def _process_responses(self, responses, step_name):
-        """Process streaming responses and send as think chunks"""
+        """Process streaming Dashscope responses into context chunks.
+
+        The Dashscope deep research API returns structured messages
+        containing phase, status, web research information and token
+        usage. This helper flattens the stream into user-readable
+        progress strings and returns the concatenated content.
+        """
+
         current_phase = None
         phase_content = ""
         research_goal = ""
@@ -174,7 +225,7 @@ class DashscopeDeepResearchOp(BaseAsyncToolOp):
                                 finish_msg += f"\n   研究目标: {research_goal}"
                             await self.context.add_stream_string_and_type(finish_msg + "\n", ChunkEnum.THINK)
 
-                # Send content as think chunks
+                # Send content as think or answer chunks depending on the step.
                 if content:
                     phase_content += content
                     if "第一步" in step_name:
@@ -200,7 +251,7 @@ class DashscopeDeepResearchOp(BaseAsyncToolOp):
                 if status == "finished":
                     if hasattr(response, "usage") and response.usage:
                         usage = response.usage
-                        usage_msg = f"\n    Token消耗统计:\n"
+                        usage_msg = "\n    Token消耗统计:\n"
                         usage_msg += f"      输入tokens: {usage.get('input_tokens', 0)}\n"
                         usage_msg += f"      输出tokens: {usage.get('output_tokens', 0)}\n"
                         usage_msg += f"      请求ID: {response.get('request_id', '未知')}"
@@ -223,5 +274,4 @@ class DashscopeDeepResearchOp(BaseAsyncToolOp):
             await self.context.add_stream_string_and_type(phase_end_msg + "\n", ChunkEnum.THINK)
 
         return phase_content
-
 

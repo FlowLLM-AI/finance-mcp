@@ -1,3 +1,10 @@
+"""HTTP-based integration test for the finance-mcp service.
+
+This module starts the finance-mcp service via `FinanceMcpServiceRunner` and
+uses `curl` as a subprocess to hit various HTTP endpoints. Responses are
+streamed to stdout to simulate a real client consuming server-sent output.
+"""
+
 import json
 import subprocess
 import time
@@ -18,26 +25,34 @@ host = "0.0.0.0"
 port = 8002
 
 
-def test_http_service(endpoint: str, data: str):
-    """
-    Test HTTP service by executing curl command with streaming output.
-    
+def test_http_service(endpoint: str, data: str) -> None:
+    """Call a streaming HTTP endpoint using curl and print the response.
+
     Args:
-        endpoint: API endpoint path (e.g., "conduct_research")
-        data: JSON data string to send in request body
+        endpoint: API endpoint path (for example ``"conduct_research"``).
+        data: JSON-encoded request body to send to the endpoint.
     """
+
     url = f"http://{host}:{port}/{endpoint}"
     curl_cmd = [
-        "curl", "-X", "POST", url,
-        "--no-buffer", "-N", "-s", "-S",
-        "-H", "Content-Type: application/json",
-        "-d", data,
+        "curl",
+        "-X",
+        "POST",
+        url,
+        "--no-buffer",
+        "-N",
+        "-s",
+        "-S",
+        "-H",
+        "Content-Type: application/json",
+        "-d",
+        data,
     ]
 
     logger.info(f"Executing curl command: {' '.join(curl_cmd)}")
     logger.info("=" * 80)
 
-    # Execute curl command with streaming output
+    # Execute curl command with streaming output so we can inspect chunks
     process = subprocess.Popen(
         curl_cmd,
         stdout=subprocess.PIPE,
@@ -46,7 +61,7 @@ def test_http_service(endpoint: str, data: str):
         bufsize=-1,
     )
 
-    # Read and print output in chunks for real-time streaming
+    # Read and print output in chunks for real-time streaming feedback.
     chunk_size = 1024
     while True:
         chunk = process.stdout.read(chunk_size)
@@ -56,7 +71,7 @@ def test_http_service(endpoint: str, data: str):
             time.sleep(0.01)
             continue
 
-        print(chunk, end='', flush=True)
+        print(chunk, end="", flush=True)
 
         # for x in chunk:
         #     print(x, end='', flush=True)
@@ -67,11 +82,13 @@ def test_http_service(endpoint: str, data: str):
     logger.info(f"Curl command completed with return code: {process.returncode}")
 
 
-def main():
+def main() -> None:
+    """Start the finance-mcp HTTP service and exercise selected endpoints."""
+
     with FinanceMcpServiceRunner(
-            service_args,
-            host=host,
-            port=port,
+        service_args,
+        host=host,
+        port=port,
     ) as service:
         logger.info(f"Service is running on port {service.port}")
         logger.info("Waiting a moment for service to fully initialize...")

@@ -1,10 +1,14 @@
-"""Test module for finance-mcp MCP service.
+"""Test module for the finance-mcp MCP service over HTTP.
 
-This module tests the finance-mcp MCP service by:
-1. Starting the service with specified configuration
-2. Connecting to the service using FastMcpClient
-3. Listing available tools
-4. Testing tool calls
+This module exercises the finance-mcp MCP service by:
+
+1. Starting the service with the given configuration using
+   :class:`FinanceMcpServiceRunner`.
+2. Connecting to the service via :class:`FastMcpClient`.
+3. Listing available tools exposed by the MCP server.
+4. Invoking a selection of tools and asserting that each call succeeds.
+
+It is intended as an integration/diagnostic script rather than a unit test.
 """
 
 import asyncio
@@ -33,12 +37,14 @@ mcp_config = {
 }
 
 
-async def test_mcp_service():
+async def test_mcp_service() -> None:
+    """Connect to the MCP service, list tools, and run sample tool calls."""
+
     # Connect to the MCP service using FastMcpClient
     async with FastMcpClient(
-            name="finance-mcp-test",
-            config=mcp_config,
-            max_retries=1,
+        name="finance-mcp-test",
+        config=mcp_config,
+        max_retries=1,
     ) as client:
         # List available tools
         print("=" * 50)
@@ -59,7 +65,6 @@ async def test_mcp_service():
             # ("tavily_search", {"query": "Python programming best practices"}),
             # ("mock_search", {"query": "最新的AI技术发展"}),
             # ("react_agent", {"query": "分析一下宁德时代"}),
-
             ("crawl_ths_company", {"code": "300750", "query": "公司基本信息"}),
             ("crawl_ths_holder", {"code": "300750", "query": "股东情况"}),
             ("crawl_ths_operate", {"code": "300750", "query": "经营情况"}),
@@ -80,11 +85,14 @@ async def test_mcp_service():
             print(f"Tool call result: {tool_name}, success: {success}, content: {result_content}")
             assert success
 
-def main():
+
+def main() -> None:
+    """Run the MCP service in-process and execute the async test routine."""
+
     with FinanceMcpServiceRunner(
-            service_args,
-            host=host,
-            port=port,
+        service_args,
+        host=host,
+        port=port,
     ) as service:
         logger.info(f"Service is running on port {service.port}")
 

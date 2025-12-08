@@ -13,12 +13,12 @@ from loguru import logger
 
 class FastMcpClient:
     def __init__(
-            self,
-            name: str,
-            config: dict,
-            append_env: bool = False,
-            max_retries: int = 3,
-            timeout: Optional[float] = None,
+        self,
+        name: str,
+        config: dict,
+        append_env: bool = False,
+        max_retries: int = 3,
+        timeout: Optional[float] = None,
     ):
         self.name: str = name
         self.config: dict = config
@@ -69,7 +69,7 @@ class FastMcpClient:
                 kwargs["sse_read_timeout"] = self.config["timeout"]
 
             # Default to SSE for /sse endpoints, otherwise StreamableHttp
-            if url.endswith("/sse"):
+            if transport_type == "sse" or url.endswith("/sse"):
                 return SSETransport(**kwargs)
             else:
                 # For URLs without /sse, use StreamableHttpTransport
@@ -195,10 +195,10 @@ class FastMcpClient:
         return [ToolCall.from_mcp_tool(t) for t in tools]
 
     async def call_tool(
-            self,
-            tool_name: str,
-            arguments: dict,
-            parse_result: bool = False,
+        self,
+        tool_name: str,
+        arguments: dict,
+        parse_result: bool = False,
     ) -> Union[str, CallToolResult]:
         if not self.client:
             raise RuntimeError(f"Server {self.name} not initialized")

@@ -47,6 +47,7 @@ class HistoryCalculateOp(BaseAsyncToolOp):
         query: str = self.input_dict["query"]
 
         import tushare as ts
+
         ts.pro_api(token=os.getenv("TUSHARE_API_TOKEN", ""))
 
         code_prompt: str = self.prompt_format(

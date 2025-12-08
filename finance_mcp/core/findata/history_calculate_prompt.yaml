@@ -70,12 +70,12 @@ code_example: |
   ```python
   import tushare as ts
   import pandas as pd
-  
+
   pro = ts.pro_api()
-  
+
   # 获取数据
   df = pro.daily(ts_code='000001.SZ', start_date='20250101', end_date='20251201')
-  
+
   df = df.sort_values(by='trade_date')
 
   # 获取最近30个交易日

@@ -47,8 +47,8 @@ class MockSearchOp(BaseAsyncToolOp):
                 content=self.prompt_format(
                     "mock_search_op_prompt",
                     query=query,
-                    num_results=random.randint(0, 5)
-                )
+                    num_results=random.randint(0, 5),
+                ),
             ),
         ]
 

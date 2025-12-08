@@ -12,10 +12,23 @@ class ThinkToolOp(BaseAsyncToolOp):
     file_path = __file__
 
     def __init__(self, add_output_reflection: bool = False, **kwargs):
+        """Create a think tool helper.
+
+        Args:
+            add_output_reflection: If ``True``, the caller-provided
+                reflection text is returned as the tool output.
+                Otherwise a generic reflection string from the prompt
+                configuration is used.
+            **kwargs: Additional keyword arguments forwarded to
+                :class:`BaseAsyncToolOp`.
+        """
+
         super().__init__(**kwargs)
         self.add_output_reflection: bool = add_output_reflection
 
     def build_tool_call(self) -> ToolCall:
+        """Describe the think tool and its single text field input."""
+
         return ToolCall(
             **{
                 "name": "think_tool",
@@ -31,7 +44,10 @@ class ThinkToolOp(BaseAsyncToolOp):
         )
 
     async def async_execute(self):
+        """Populate the output with either user or template reflection."""
+
         if self.add_output_reflection:
             self.set_output(self.input_dict["reflection"])
         else:
             self.set_output(self.get_prompt("reflection_output"))
+

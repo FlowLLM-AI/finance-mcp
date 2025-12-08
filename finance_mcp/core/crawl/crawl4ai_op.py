@@ -15,17 +15,15 @@ from loguru import logger
 from ..utils import get_random_user_agent
 
 
-
-
 @C.register_op()
 class Crawl4aiOp(BaseAsyncToolOp):
 
     def __init__(
-            self,
-            max_content_char_length: int = 50000,
-            enable_cache: bool = True,
-            cache_expire_hours: float = 1,
-            **kwargs,
+        self,
+        max_content_char_length: int = 50000,
+        enable_cache: bool = True,
+        cache_expire_hours: float = 1,
+        **kwargs,
     ):
 
         super().__init__(
@@ -87,7 +85,6 @@ class Crawl4aiOp(BaseAsyncToolOp):
             else:
                 subprocess.run(["python", "-m", "playwright", "install", "chromium"], check=True)
             logger.info("Playwright browsers installed successfully.")
-
 
         async with AsyncWebCrawler(config=self.browser_config) as crawler:
             result = await crawler.arun(url=url, config=self.crawler_config)

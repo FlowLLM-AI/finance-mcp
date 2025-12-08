@@ -14,12 +14,12 @@ from loguru import logger
 
 class FinanceMcpServiceRunner:
     """Context manager for running finance-mcp service as a subprocess.
-    
+
     This class manages the lifecycle of a finance-mcp service process:
     - Starts the service with specified arguments
     - Waits for the service to be ready
     - Provides cleanup on exit
-    
+
     Example:
         ```python
         service_args = [
@@ -28,7 +28,7 @@ class FinanceMcpServiceRunner:
             "mcp.transport=http",
             "llm.default.model_name=qwen3-30b-a3b-thinking-2507",
         ]
-        
+
         with FinanceMcpServiceRunner(service_args, port=8001) as service:
             # Service is ready, use it here
             print(f"Service is running on port {service.port}")
@@ -37,18 +37,18 @@ class FinanceMcpServiceRunner:
     """
 
     def __init__(
-            self,
-            service_args: List[str] | str,
-            port: int = 8001,
-            host: str = "0.0.0.0",
-            max_wait: int = 3600,
-            check_interval: float = 0.5,
-            stdout=None,
-            stderr=None,
-            **popen_kwargs,
+        self,
+        service_args: List[str] | str,
+        port: int = 8001,
+        host: str = "0.0.0.0",
+        max_wait: int = 3600,
+        check_interval: float = 0.5,
+        stdout=None,
+        stderr=None,
+        **popen_kwargs,
     ):
         """Initialize the service runner.
-        
+
         Args:
             service_args: List of command-line arguments to start the service
             port: Port number to check for service readiness
@@ -66,10 +66,12 @@ class FinanceMcpServiceRunner:
         else:
             raise ValueError("service_args must be a list or a string")
 
-        self.service_args.extend([
-            f"mcp.port={port}",
-            f"mcp.host={host}",
-        ])
+        self.service_args.extend(
+            [
+                f"mcp.port={port}",
+                f"mcp.host={host}",
+            ],
+        )
 
         self.port = port
         self.host = host
@@ -84,7 +86,7 @@ class FinanceMcpServiceRunner:
 
     def _wait_for_service(self) -> bool:
         """Wait for the service to be ready by checking if the port is listening.
-        
+
         Returns:
             True if service is ready, False otherwise
         """
@@ -133,10 +135,10 @@ class FinanceMcpServiceRunner:
 
     def __enter__(self) -> "FinanceMcpServiceRunner":
         """Start the service and wait for it to be ready.
-        
+
         Returns:
             self
-        
+
         Raises:
             RuntimeError: If service fails to start within timeout
         """
@@ -166,8 +168,7 @@ class FinanceMcpServiceRunner:
                 logger.error(f"Service process exited with code: {self.process.returncode}")
 
             raise RuntimeError(
-                f"Service failed to start within {self.max_wait} seconds. "
-                f"Check service logs for details."
+                f"Service failed to start within {self.max_wait} seconds. " f"Check service logs for details.",
             )
 
         self._is_ready = True
@@ -176,7 +177,7 @@ class FinanceMcpServiceRunner:
 
     def __exit__(self, exc_type=None, exc_val=None, exc_tb=None):
         """Clean up the service process on exit.
-        
+
         Args:
             exc_type: Exception type (if any)
             exc_val: Exception value (if any)
@@ -188,7 +189,7 @@ class FinanceMcpServiceRunner:
     @property
     def is_ready(self) -> bool:
         """Check if the service is ready.
-        
+
         Returns:
             True if service is ready, False otherwise
         """
@@ -197,7 +198,7 @@ class FinanceMcpServiceRunner:
     @property
     def is_running(self) -> bool:
         """Check if the service process is still running.
-        
+
         Returns:
             True if process is running, False otherwise
         """

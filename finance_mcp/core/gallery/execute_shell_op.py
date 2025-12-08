@@ -10,17 +10,19 @@ class ExecuteShellOp(BaseAsyncToolOp):
     file_path = __file__
 
     def build_tool_call(self) -> ToolCall:
-        return ToolCall(**{
-            "name": "ExecuteShell",
-            "description": self.get_prompt("tool_description"),
-            "input_schema": {
-                "command": {
-                    "type": "string",
-                    "description": "command to be executed",
-                    "required": True,
+        return ToolCall(
+            **{
+                "name": "ExecuteShell",
+                "description": self.get_prompt("tool_description"),
+                "input_schema": {
+                    "command": {
+                        "type": "string",
+                        "description": "command to be executed",
+                        "required": True,
+                    },
                 },
             },
-        })
+        )
 
     async def async_execute(self):
         """Execute the shell command operation."""

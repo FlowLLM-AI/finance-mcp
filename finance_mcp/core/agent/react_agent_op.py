@@ -40,7 +40,7 @@ class ReactAgentOp(BaseAsyncToolOp):
                         "type": "string",
                         "description": "query",
                         "required": True,
-                    }
+                    },
                 },
             },
         )
