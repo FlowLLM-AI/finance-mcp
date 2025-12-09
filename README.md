@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <strong>FinanceMCP · MCP-Server for Financial Research Agents</strong>
+  <strong>MCP-Server for Financial Research Agents</strong>
 </p>
 
 <p align="center">
@@ -14,8 +14,7 @@
 </p>
 
 <p align="center">
-  <em><sub>If Finance MCP is helpful to you, please give us a ⭐ Star. Your support is the driving force for our continuous improvement.</sub></em>
-  <em><sub>If you have any financial data integration requirements, please submit an issue. We will complete it as soon as possible when time permits.</sub></em>
+  <em><sub>If you have any financial data integration requirements, please submit an issue.</sub></em>
 </p>
 
 <p align="center">
@@ -184,14 +183,14 @@ The service will be available at: `http://0.0.0.0:8001/sse`
 
 ### Configuration Parameters
 
-| Parameter                | Description                                                                                                                                                                                 | Example                                                                |
-|--------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------|
-| `config`                 | Configuration files to load (comma-separated). Available: `default` (core flows), `ths` (TongHuaShun stock data), `stream_agent` (streaming agents), `external_mcp` (external MCP services) | `config=default,ths`                                                   |
-| `mcp.transport`          | Transport mode: `stdio` (Claude Desktop), `sse` (web apps), `http` (RESTful), `streamable-http`                                                                                             | `mcp.transport=stdio`                                                  |
-| `mcp.host`               | Host address (for sse/http transports only)                                                                                                                                                 | `mcp.host=0.0.0.0`                                                     |
-| `mcp.port`               | Port number (for sse/http transports only)                                                                                                                                                  | `mcp.port=8001`                                                        |
-| `llm.default.model_name` | Default LLM model name (overrides config file)                                                                                                                                              | `llm.default.model_name=qwen3-30b-a3b-thinking-2507`                   |
-| `disabled_flows`         | JSON array of flow names to disable. **Tip**: Disable flows if you don't have the required API keys (e.g., `tavily_search` requires `TAVILY_API_KEY`)                                       | `disabled_flows='[\"tavily_search\",\"mock_search\",\"react_agent\"]'` |
+| Parameter                | Description                                                                                                                                                                                 | Example                                                |
+|--------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------|
+| `config`                 | Configuration files to load (comma-separated). Available: `default` (core flows), `ths` (TongHuaShun stock data), `stream_agent` (streaming agents), `external_mcp` (external MCP services) | config=default,ths                                     |
+| `mcp.transport`          | Transport mode: `stdio` (Claude Desktop), `sse` (web apps), `http` (RESTful), `streamable-http`                                                                                             | mcp.transport=stdio                                    |
+| `mcp.host`               | Host address (for sse/http transports only)                                                                                                                                                 | mcp.host=0.0.0.0                                       |
+| `mcp.port`               | Port number (for sse/http transports only)                                                                                                                                                  | mcp.port=8001                                          |
+| `llm.default.model_name` | Default LLM model name (overrides config file)                                                                                                                                              | llm.default.model_name=<br>qwen3-30b-a3b-thinking-2507 |
+| `disabled_flows`         | JSON array of flow names to disable. **Tip**: Disable flows if you don't have the required API keys (e.g., `tavily_search` requires `TAVILY_API_KEY`)                                       | disabled_flows=<br>'["react_agent"]'                   |
 
 ### Environment Variables
 
