@@ -14,7 +14,7 @@ authors = [
 license = {file = "LICENSE"}
 readme = "README.md"
 keywords = [
-  "llm", "agent", 
+  "llm", "agent",
   "deep-research", "financial-research",
   "mcp", "model-context-protocol", "flowllm",
   "crawl4ai", "web-search", "tushare"

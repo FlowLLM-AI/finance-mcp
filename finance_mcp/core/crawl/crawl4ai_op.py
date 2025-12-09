@@ -130,9 +130,10 @@ class Crawl4aiOp(BaseAsyncToolOp):
         # Install playwright only once using class variable
         if not Crawl4aiOp._playwright_installed:
             process = await asyncio.create_subprocess_exec(
-                'playwright', 'install',
+                "playwright",
+                "install",
                 stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE
+                stderr=asyncio.subprocess.PIPE,
             )
             stdout, stderr = await process.communicate()
             logger.info(f"Playwright installation completed with exit stdout={stdout} stderr={stderr}")
