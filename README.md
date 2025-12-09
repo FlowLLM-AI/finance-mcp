@@ -14,12 +14,18 @@
 </p>
 
 <p align="center">
-  <em><sub>If you want to add a new MCP service, you can submit an issue.</sub></em>
+  <em><sub>If you think there are any financial MCP tools that are necessary, please submit an issue to us, and we will respond as soon as possible.</sub></em>
 </p>
 
 <p align="center">
   <a href="./README_ZH.md">简体中文</a> | English
 </p>
+
+---
+
+## 📰 Latest Updates
+
+- **[2025-01]** 🎉 Released finance-mcp v0.1.1
 
 ---
 
@@ -274,7 +280,7 @@ from fastmcp import Client
 async def main():
     async with Client("http://0.0.0.0:8001/sse") as client:
         result = await client.call_tool(
-            name="dashscope_search", 
+            name="dashscope_search",
             arguments={"query": "Recent news about Zijin Mining"}
         )
     print(result)

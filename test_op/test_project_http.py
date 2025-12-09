@@ -85,16 +85,16 @@ def test_http_service(endpoint: str, data: str) -> None:
 def main() -> None:
     """
     Start the finance-mcp HTTP service and exercise selected endpoints.
-    
+
     Example: Streaming Deep Research
-    
+
     finance-mcp \
       config=default,stream_agent \
       backend=http \
       http.host=0.0.0.0 \
       http.port=8002 \
       llm.default.model_name=qwen3-30b-a3b-thinking-2507
-    
+
     curl -X POST http://0.0.0.0:8002/langchain_deep_research \
       -H "Content-Type: application/json" \
       -d '{"query": "茅台怎么样？"}'
