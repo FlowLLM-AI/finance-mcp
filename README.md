@@ -36,17 +36,6 @@ the [FlowLLM](https://github.com/flowllm-ai/flowllm) framework, it integrates co
 as [Crawl4AI](https://github.com/unclecode/crawl4ai), [Tushare](https://tushare.pro/), [Tavily](https://www.tavily.com/)/[DashScope](https://help.aliyun.com/zh/model-studio/web-search)
 search, and more, helping you quickly build professional financial research agent systems.
 
-### 🎯 Core Features
-
-Finance MCP aims to provide a complete toolchain for financial research scenarios, supporting:
-
-- **🔬 Deep Research Agents**: Financial research agents based on ReAct architecture, supporting multi-turn retrieval, reasoning, and analysis
-- **🌐 Web Content Scraping**: Intelligent web scraping and long-text extraction capabilities based on Crawl4AI
-- **📊 Financial Data Acquisition**: Integration with Tushare for historical data calculation and analysis
-- **🔍 Multi-Source Search**: Support for multiple search backends including Tavily, DashScope, and more
-- **🏢 TongHuaShun Data Integration**: Provides 13+ TongHuaShun data scraping flows (company profiles, shareholder research, financial analysis, etc.)
-- **⚙️ Composable Workflows**: Flexibly combine operators through YAML configuration to build customized research workflows
-
 ### 💡 Why Choose Finance MCP?
 
 - ✅ **Zero-Code Configuration**: Combine operators through YAML configuration files without writing service code
