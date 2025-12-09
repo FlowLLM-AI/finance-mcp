@@ -23,12 +23,6 @@
 
 ---
 
-## 📰 Latest Updates
-
-- **[2025-01]** 🎉 Released finance-mcp v0.1.1
-
----
-
 ## 📖 Project Overview
 
 Finance MCP is an intelligent agent toolkit and MCP server designed for financial research scenarios. Built on
@@ -43,6 +37,12 @@ search, and more, helping you quickly build professional financial research agen
 - ✅ **Multi-Protocol Support**: Supports both MCP (stdio/SSE/HTTP) and HTTP RESTful API
 - ✅ **Smart Caching**: Built-in multi-level caching mechanism to improve efficiency and reduce costs
 - ✅ **Modular Design**: Each functional module is independently configurable, supporting enable/disable as needed
+
+---
+
+## 📰 Latest Updates
+
+- **[2025-01]** 🎉 Released finance-mcp v0.1.1
 
 ---
 
