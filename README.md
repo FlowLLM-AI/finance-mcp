@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <a href="https://flowllm-ai.github.io/finance-mcp/">简体中文</a> | English
+  <a href="./README_ZH.md">简体中文</a> | English
 </p>
 
 ---
@@ -57,7 +57,7 @@ Finance MCP aims to provide a complete toolchain for financial research scenario
 
 | Service Name              | Description                                                                                                   | Dependencies        | Input Parameters                                                                           |
 |---------------------------|---------------------------------------------------------------------------------------------------------------|---------------------|--------------------------------------------------------------------------------------------|
-| **history_calculate**     | Price-volume analysis based on Tushare A-share historical data                                                | `TUSHARE_API_TOKEN` | `code`: '601899'<br>`query`: How much did it rise in the past week? Any MACD golden cross? |
+| **history_calculate**     | Price-volume analysis based on Tushare A-share historical data                                                | `TUSHARE_API_TOKEN` | `code`: `601899`<br>`query`: How much did it rise in the past week? Any MACD golden cross? |
 | **crawl_url**             | Scrape and parse web content                                                                                  | `crawl4ai`          | `url`: `https://example.com`                                                               |
 | **extract_entities_code** | Identify financial entities from text and complete stock codes (currently uses dashscope_search, replaceable) | `DASHSCOPE_API_KEY` | `query`: I want to learn about Kweichow Moutai stock                                       |
 | **execute_code**          | Execute arbitrary Python code                                                                                 | -                   | `code`: `print(1+1)`                                                                       |
@@ -114,7 +114,20 @@ Or using uv:
 uv pip install finance-mcp
 ```
 
-### MCP Client Configuration
+### Usage Modes
+
+Finance MCP supports two usage modes:
+
+1. **Stdio Mode**: Direct execution via `uvx`, suitable for local MCP clients (Claude Desktop, Cursor, etc.)
+2. **Service Mode**: Start as HTTP/SSE server, suitable for remote deployment and web applications
+
+---
+
+### Mode 1: Stdio Mode (Direct Execution)
+
+This mode runs Finance MCP directly through `uvx`, communicating via standard input/output. Ideal for local MCP clients.
+
+#### Step 1: Configure MCP Client
 
 Add this configuration to your MCP client (e.g., Claude Desktop, Cursor):
 
@@ -143,23 +156,24 @@ Add this configuration to your MCP client (e.g., Claude Desktop, Cursor):
 }
 ```
 
-### Environment Setup
+---
 
-> **Note**: If you're using MCP client configuration (see MCP Client Configuration section above), you don't need to create a `.env` file. Simply fill in the environment variables in the `env` field of your `mcpServers` configuration.
+### Mode 2: Service Mode (HTTP/SSE Server)
 
-For HTTP server mode, configure environment variables:
+This mode starts Finance MCP as a standalone HTTP/SSE server that can be accessed remotely.
 
-1. Copy `example.env` to `.env`:
+#### Step 1: Configure Environment Variables
+
+Copy `example.env` to `.env` and fill in your API keys:
 
 ```bash
 cp example.env .env
+# Edit .env and fill in your API keys
 ```
 
-2. Edit `.env` and fill in your API keys
+#### Step 2: Start the Server
 
-### Deploy HTTP Server
-
-Start the HTTP server with SSE transport:
+Start the Finance MCP server with SSE transport:
 
 ```bash
 finance-mcp \
@@ -173,16 +187,30 @@ finance-mcp \
 
 The service will be available at: `http://0.0.0.0:8001/sse`
 
+#### Step 3: Connect from MCP Client
+
+Add this configuration to your MCP client to connect to the remote SSE server:
+
+```json
+{
+  "mcpServers": {
+    "finance-mcp": {
+      "url": "http://0.0.0.0:8001/sse"
+    }
+  }
+}
+```
+
 ### Configuration Parameters
 
 | Parameter                | Description                                                                                                                                                                                 | Example                                                |
 |--------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------|
-| `config`                 | Configuration files to load (comma-separated). Available: `default` (core flows), `ths` (TongHuaShun stock data), `stream_agent` (streaming agents), `external_mcp` (external MCP services) | config=default,ths                                     |
-| `mcp.transport`          | Transport mode: `stdio` (Claude Desktop), `sse` (web apps), `http` (RESTful), `streamable-http`                                                                                             | mcp.transport=stdio                                    |
-| `mcp.host`               | Host address (for sse/http transports only)                                                                                                                                                 | mcp.host=0.0.0.0                                       |
-| `mcp.port`               | Port number (for sse/http transports only)                                                                                                                                                  | mcp.port=8001                                          |
-| `llm.default.model_name` | Default LLM model name (overrides config file)                                                                                                                                              | llm.default.model_name=<br>qwen3-30b-a3b-thinking-2507 |
-| `disabled_flows`         | JSON array of flow names to disable. **Tip**: Disable flows if you don't have the required API keys (e.g., `tavily_search` requires `TAVILY_API_KEY`)                                       | disabled_flows=<br>'["react_agent"]'                   |
+| `config`                 | Configuration files to load (comma-separated). Available: `default` (core flows), `ths` (TongHuaShun stock data), `stream_agent` (streaming agents), `external_mcp` (external MCP services) | `config=default,ths`                                     |
+| `mcp.transport`          | Transport mode: `stdio` (Claude Desktop), `sse` (web apps), `http` (RESTful), `streamable-http`                                                                                             | `mcp.transport=stdio`                                    |
+| `mcp.host`               | Host address (for sse/http transports only)                                                                                                                                                 | `mcp.host=0.0.0.0`                                       |
+| `mcp.port`               | Port number (for sse/http transports only)                                                                                                                                                  | `mcp.port=8001`                                          |
+| `llm.default.model_name` | Default LLM model name (overrides config file)                                                                                                                                              | `llm.default.model_name=qwen3-30b-a3b-thinking-2507` |
+| `disabled_flows`         | JSON array of flow names to disable. **Tip**: Disable flows if you don't have the required API keys (e.g., `tavily_search` requires `TAVILY_API_KEY`)                                       | `disabled_flows='["react_agent"]'`                   |
 
 ### Environment Variables
 
@@ -194,6 +222,27 @@ The service will be available at: `http://0.0.0.0:8001/sse`
 | `TUSHARE_API_TOKEN`   | ⚠️ Optional | For historical data analysis               |
 | `TAVILY_API_KEY`      | ⚠️ Optional | For Tavily web search                      |
 | `BAILIAN_MCP_API_KEY` | ⚠️ Optional | For external MCP services                  |
+
+---
+
+### Using with FastMCP Client (Service Mode)
+
+When running in Service Mode, you can also use the [FastMCP](https://gofastmcp.com/getting-started/welcome) Python client to directly access the server:
+
+```python
+import asyncio
+from fastmcp import Client
+
+async def main():
+    async with Client("http://0.0.0.0:8001/sse") as client:
+        result = await client.call_tool(
+            name="dashscope_search", 
+            arguments={"query": "Recent news about Zijin Mining"}
+        )
+    print(result)
+
+asyncio.run(main())
+```
 
 ---
 
