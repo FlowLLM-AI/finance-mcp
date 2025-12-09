@@ -1,265 +1,238 @@
 <p align="center">
-  <strong>Finance MCP · 面向金融研究的智能代理与 MCP 服务</strong>
+ <img src="docs/figure/logo.png" alt="Finance MCP Logo" width="50%">
 </p>
 
 <p align="center">
-  <a href="https://pypi.org/project/finance-mcp/"><img src="https://img.shields.io/badge/python-3.10+-blue" alt="Python 版本"></a>
-  <a href="https://pypi.org/project/finance-mcp/"><img src="https://img.shields.io/pypi/v/finance-mcp.svg?logo=pypi" alt="PyPI 版本"></a>
-  <a href="./LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-black" alt="许可证"></a>
+  <strong>FinanceMCP · MCP-Server for Financial Research Agents</strong>
+</p>
+
+<p align="center">
+  <a href="https://pypi.org/project/finance-mcp/"><img src="https://img.shields.io/badge/python-3.10+-blue" alt="Python Version"></a>
+  <a href="https://pypi.org/project/finance-mcp/"><img src="https://img.shields.io/pypi/v/finance-mcp.svg?logo=pypi" alt="PyPI Version"></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-black" alt="License"></a>
   <a href="https://github.com/flowllm-ai/finance-mcp"><img src="https://img.shields.io/github/stars/flowllm-ai/finance-mcp?style=social" alt="GitHub Stars"></a>
 </p>
 
 <p align="center">
-  <em><sub>如果 Finance MCP 对你有帮助，欢迎点一个 ⭐ Star，你的支持是我们持续改进的动力。</sub></em>
+  <em><sub>If Finance MCP is helpful to you, please give us a ⭐ Star. Your support is the driving force for our continuous improvement.</sub></em>
+  <em><sub>If you have any financial data integration requirements, please submit an issue. We will complete it as soon as possible when time permits.</sub></em>
 </p>
 
 <p align="center">
-  <a href="https://flowllm-ai.github.io/finance-mcp/">English Docs</a> | 简体中文
+  <a href="https://flowllm-ai.github.io/finance-mcp/">简体中文</a> | English
 </p>
 
 ---
 
-Finance MCP 是一个面向金融研究场景的智能体工具包与 MCP 服务器，基于
-[FlowLLM](https://github.com/flowllm-ai/flowllm)、网络搜索工具和
-[Crawl4AI](https://github.com/unclecode/crawl4ai) 等组件，帮助你快速搭建：
+## 📖 Project Overview
 
-- **金融研究 / 深度研报型智能体**
-- **面向 IDE / 客户端的 MCP Server**
-- **可编排的金融数据抓取与信息抽取流水线**
+Finance MCP is an intelligent agent toolkit and MCP (Model Context Protocol) server designed for financial research scenarios. Built on the [FlowLLM](https://github.com/flowllm-ai/flowllm) framework, it integrates components such as [Crawl4AI](https://github.com/unclecode/crawl4ai), Tushare, Tavily/DashScope search, and more, helping you quickly build professional financial research agent systems.
 
-你可以把它理解为：
+### 🎯 Core Features
 
-```text
-Finance MCP = LLM Agents + Web Search + Crawl4AI + 金融实体与文本抽取
-```
+Finance MCP aims to provide a complete toolchain for financial research scenarios, supporting:
 
----
+- **🔬 Deep Research Agents**: Financial research agents based on ReAct architecture, supporting multi-turn retrieval, reasoning, and analysis
+- **🌐 Web Content Scraping**: Intelligent web scraping and long-text extraction capabilities based on Crawl4AI
+- **📊 Financial Data Acquisition**: Integration with Tushare for historical data calculation and analysis
+- **🔍 Multi-Source Search**: Support for multiple search backends including Tavily, DashScope, and more
+- **🏢 TongHuaShun Data Integration**: Provides 13+ TongHuaShun data scraping flows (company profiles, shareholder research, financial analysis, etc.)
+- **⚙️ Composable Workflows**: Flexibly combine operators through YAML configuration to build customized research workflows
 
-## 📰 项目概览
+### 💡 Why Choose Finance MCP?
 
-- **MCP Server 支持**：默认后端为 MCP，可直接通过 `stdio` 集成到 IDE / 客户端。
-- **HTTP 服务模式**：也可通过 HTTP 暴露服务，方便外部系统调用。
-- **金融研究 Agent**：内置 `ConductResearchOp`、`DashscopeDeepResearchOp` 等算子，支持深度研究与多轮检索。
-- **网页抓取与长文本处理**：基于 `Crawl4aiOp` / `Crawl4aiLongTextOp` 和 `ExtractLongTextOp`，对网页进行抓取与段落级抽取。
-- **金融实体识别与代码补全**：`ExtractEntitiesCodeOp` 可从自然语言中抽取股票 / 基金实体，并补全证券代码。
-- **可组合的 Flow 编排**：通过配置文件（如 `config/default.yaml`）组合多个算子，快速构建你的研究流。
+- ✅ **Zero-Code Configuration**: Combine operators through YAML configuration files without writing service code
+- ✅ **Out-of-the-Box**: Pre-configured 20+ financial research-related flows covering common research scenarios
+- ✅ **Multi-Protocol Support**: Supports both MCP (stdio/SSE/HTTP) and HTTP RESTful API
+- ✅ **Smart Caching**: Built-in multi-level caching mechanism to improve efficiency and reduce costs
+- ✅ **Modular Design**: Each functional module is independently configurable, supporting enable/disable as needed
 
 ---
 
-## ✨ 架构与核心组件
+## 🚀 MCP Services
 
-Finance MCP 基于 FlowLLM 的 Application 框架，对外提供统一的应用入口
-`FinanceMcpApp`（见 `finance_mcp/main.py`），其核心能力集中在 `finance_mcp/core` 中：
+### Default MCP Services
 
-### 🧠 Agent 与研究流程（`finance_mcp.core.agent`）
+| Service Name              | Description                                                                              | Dependencies           | Input Parameters                                                                 |
+|---------------------------|------------------------------------------------------------------------------------------|------------------------|----------------------------------------------------------------------------------|
+| **history_calculate**     | Price-volume analysis based on Tushare A-share historical data                          | `TUSHARE_API_TOKEN`    | `code`: '601899'<br>`query`: "How much did it rise in the past week? Any MACD golden cross?" |
+| **crawl_url**             | Scrape and parse web content                                                            | `crawl4ai`             | `url`: `https://example.com`                                                     |
+| **extract_entities_code** | Identify financial entities from text and complete stock codes (currently uses dashscope_search, replaceable) | `DASHSCOPE_API_KEY`    | `query`: "I want to learn about Kweichow Moutai stock"                          |
+| **execute_code**          | Execute arbitrary Python code                                                           | -                      | `code`: `print(1+1)`                                                             |
+| **execute_shell**         | Execute shell commands                                                                   | -                      | `command`: `ls`                                                                   |
+| **dashscope_search**      | Web search based on DashScope                                                           | `DASHSCOPE_API_KEY`    | `query`: "Recent news about Zijin Mining"                                        |
+| **tavily_search**         | Web search based on Tavily                                                              | `TAVILY_API_KEY`       | `query`: "financial news"                                                        |
+| **mock_search**           | Mock search for LLM simulation                                                           | -                      | `query`: "test query"                                                            |
+| **react_agent**           | ReAct agent combining multiple tools for answering complex questions                    | -                      | `query`: "Help me analyze Zijin Mining's trend for the next week"                |
 
-负责高层次的研究与 ReAct 风格工作流调度，包括：
+### TongHuaShun MCP Services
 
-- **`ConductResearchOp`**：组合搜索与思考工具，实现「研究主题 → 结构化结论」的完整流程。
-- **`DashscopeDeepResearchOp`**：基于 Dashscope 搜索与 LLM 的深度研究算子。
-- **`LangchainDeepResearchOp`**：基于 LangChain 的深度研究算子。
-- **`ReactAgentOp` / `ReactSearchOp`**：ReAct 风格智能体与搜索工具。
-- **`ThinkToolOp`**：通用思考工具，可与搜索 / 抓取等算子组合使用。
+> **Note**: These MCP services are implemented via crawl4ai. High concurrency may result in IP blocking.
 
-### 🌐 抓取与内容构建（`finance_mcp.core.crawl`）
+| Service Name              | Description                                                                                                                                    | Dependencies | Input Parameters Example                                                                      |
+|---------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|--------------|-----------------------------------------------------------------------------------------------|
+| **crawl_ths_company**      | Get company profile information by A-share stock code, including details, executive introductions, issuance-related info, subsidiaries, etc., and return query-relevant information | `crawl4ai`    | `code`: "600519"<br>`query`: "What are the company's main business and executive situation?"  |
+| **crawl_ths_holder**       | Get shareholder research information by A-share stock code, including shareholder count, top 10 circulating shareholders, top 10 shareholders, bondholders, controlling hierarchy, etc. | `crawl4ai`    | `code`: "600519"<br>`query`: "How have shareholder count and major shareholder structure changed recently?" |
+| **crawl_ths_operate**      | Get operational analysis information by A-share stock code, including main business introduction, operational data, main business composition, customers & suppliers, business review, product prices, etc. | `crawl4ai`    | `code`: "600519"<br>`query`: "What is the company's main business composition and operational situation?" |
+| **crawl_ths_equity**       | Get equity structure information by A-share stock code, including unlock schedule, total equity composition, A-share structure chart, historical equity changes, etc. | `crawl4ai`    | `code`: "600519"<br>`query`: "What restricted shares will be unlocked in the next year?"      |
+| **crawl_ths_capital**      | Get capital operation information by A-share stock code, including funding sources, project investments, M&A, equity investments, IPO participation, equity transfers, pledge/unfreeze, etc. | `crawl4ai`    | `code`: "600519"<br>`query`: "What recent M&A or capital operations has the company had?"    |
+| **crawl_ths_worth**        | Get earnings forecast information by A-share stock code, including performance forecasts, detailed forecast tables, research report ratings, etc. | `crawl4ai`    | `code`: "600519"<br>`query`: "What are the earnings forecasts and institutional ratings for the next three years?" |
+| **crawl_ths_news**         | Get news and announcements by A-share stock code, including news-price correlation, announcement lists, hot news, research report lists, etc. | `crawl4ai`    | `code`: "600519"<br>`query`: "What are the recent important announcements or news?"          |
+| **crawl_ths_concept**      | Get concept and theme information by A-share stock code, including regular concepts, other concepts, theme highlights, concept comparison, etc. | `crawl4ai`    | `code`: "600519"<br>`query`: "What concept themes does this stock involve?"                  |
+| **crawl_ths_position**    | Get major position information by A-share stock code, including institutional holdings summary, holding details, takeover situations, IPO allocation institutions, etc. | `crawl4ai`    | `code`: "600519"<br>`query`: "What is the institutional holding trend and major institutional holdings?" |
+| **crawl_ths_finance**      | Get financial analysis information by A-share stock code, including financial diagnosis, financial indicators, indicator change explanations, asset-liability composition, financial reports, DuPont analysis, etc. | `crawl4ai`    | `code`: "600519"<br>`query`: "What is the company's profitability and financial structure?"  |
+| **crawl_ths_bonus**        | Get dividend and financing information by A-share stock code, including dividend diagnosis, dividend history, additional issuance allocation details, additional issuance overview, rights issue overview, etc. | `crawl4ai`    | `code`: "600519"<br>`query`: "What is the historical dividend situation and recent financing arrangements?" |
+| **crawl_ths_event**        | Get company events by A-share stock code, including executive shareholding changes, shareholder shareholding changes, guarantee details, violations, institutional research, investor interactions, etc. | `crawl4ai`    | `code`: "600519"<br>`query`: "What are the recent major events or executive shareholding changes?" |
+| **crawl_ths_field**        | Get industry comparison information by A-share stock code, including industry position, industry news, etc. | `crawl4ai`    | `code`: "600519"<br>`query`: "What is the company's position in its industry?"               |
 
-基于 Crawl4AI 和自定义工具的网页抓取模块：
+### External MCP Services
 
-- **`Crawl4aiOp` / `Crawl4aiLongTextOp`**：抓取网页并生成 Markdown/长文本，便于下游 LLM 消费。
-- **`ThsUrlOp`**：构造 THS（同花顺 10jqka）等数据源的标准化 URL。
+> **Note**: External MCP services are called via SSE (Server-Sent Events). You need to configure the `BAILIAN_MCP_API_KEY` environment variable in `.env`.
 
-### 🔍 文本与实体抽取（`finance_mcp.core.extract`）
-
-面向金融场景的文本抽取与结构化处理：
-
-- **`ExtractEntitiesCodeOp`**：从用户查询中抽取股票 / 基金等实体，并补全证券代码。
-- **`ExtractLongTextOp`**：在长文本中抽取与查询相关的关键内容片段。
-
-### 🔧 搜索与工具（`finance_mcp.core.search` & `finance_mcp.core.utils`）
-
-- 集成 Dashscope / Tavily 等搜索后端，提供统一的搜索算子（如 `DashscopeSearchOp`）。
-- `run_stream_op` 等工具帮助你以流式方式执行算子并打印中间结果。
-
-### ⚙️ 配置与 Flow 编排（`finance_mcp/config/default.yaml`）
-
-默认配置文件中预置了若干常用 Flow：
-
-- **`flow.crawl_url`**：`Crawl4aiLongTextOp() >> ExtractLongTextOp()`，抓取网页并抽取重点内容。
-- **`flow.extract_entities_code`**：`ExtractEntitiesCodeOp() << DashscopeSearchOp()`，抽取实体并补全代码。
-- **`flow.react_agent`**：组合 `HistoryCalculateOp`、`ExtractEntitiesCodeOp` 与 `DashscopeSearchOp`，再交给 `ReactAgentOp` 调度。
-- **通用工具 Flow**：`execute_code`、`execute_shell`、`dashscope_search`、`tavily_search` 等。
+| Service Name       | Description                                    | Dependencies           | Input Parameters Example                    |
+|--------------------|------------------------------------------------|------------------------|--------------------------------------------|
+| **tongyi_search**  | WebSearch service based on DashScope           | `BAILIAN_MCP_API_KEY`  | `query`: "Recent news about Zijin Mining" |
+| **bochaai_search** | BochaAI search service based on DashScope      | `BAILIAN_MCP_API_KEY`  | `query`: "financial news"                  |
 
 ---
 
-## 🛠️ 安装
+## 🚀 Quick Start
 
-### 通过 PyPI 安装（推荐）
+### Installation
+
+Install Finance MCP using pip:
 
 ```bash
 pip install finance-mcp
 ```
 
-### 从源码安装
+Or using uv:
 
 ```bash
-git clone https://github.com/flowllm-ai/finance-mcp.git
-cd finance-mcp
-pip install .
+uv pip install finance-mcp
 ```
 
----
+### MCP Client Configuration
 
-## 🔑 环境变量配置
+Add this configuration to your MCP client (e.g., Claude Desktop, Cursor):
 
-参考仓库中的 `example.env`，你至少需要配置：
+```json
+{
+  "mcpServers": {
+    "finance-mcp": {
+      "command": "uvx",
+      "args": [
+        "finance-mcp",
+        "config=default,ths",
+        "mcp.transport=stdio",
+        "llm.default.model_name=qwen3-30b-a3b-thinking-2507",
+        "disabled_flows='[\"tavily_search\",\"mock_search\",\"react_agent\"]'"
+      ],
+      "env": {
+        "FLOW_LLM_API_KEY": "xxx",
+        "FLOW_LLM_BASE_URL": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "DASHSCOPE_API_KEY": "xxx",
+        "TUSHARE_API_TOKEN": "xxx",
+        "TAVILY_API_KEY": "xxx",
+        "BAILIAN_MCP_API_KEY": "xxx"
+      }
+    }
+  }
+}
+```
+
+### Environment Setup
+
+> **Note**: If you're using MCP client configuration (see MCP Client Configuration section above), you don't need to create a `.env` file. Simply fill in the environment variables in the `env` field of your `mcpServers` configuration.
+
+For HTTP server mode, configure environment variables:
+
+1. Copy `example.env` to `.env`:
 
 ```bash
-FLOW_LLM_API_KEY=xxx
+cp example.env .env
+```
+
+2. Edit `.env` and fill in your API keys:
+
+```bash
+FLOW_LLM_API_KEY=your_api_key_here
 FLOW_LLM_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
 
-# 可选：按需启用的其他 key
-# DASHSCOPE_API_KEY=xxx
-# TUSHARE_API_TOKEN=xxx
-# TAVILY_API_KEY=xxx
-# BAILIAN_MCP_API_KEY=xxx
+# Optional: Uncomment if you plan to use corresponding features
+# DASHSCOPE_API_KEY=your_dashscope_api_key
+# TUSHARE_API_TOKEN=your_tushare_token
+# TAVILY_API_KEY=your_tavily_api_key
+# BAILIAN_MCP_API_KEY=your_bailian_mcp_api_key
 ```
 
-建议将上述内容复制为 `.env` 文件，并在运行环境中加载。
+### Deploy HTTP Server
 
----
-
-## 🚀 快速开始
-
-### 1. 作为 MCP Server 运行
-
-`config/default.yaml` 中默认：
-
-```yaml
-backend: mcp
-
-mcp:
-  transport: stdio
-  host: "0.0.0.0"
-  port: 8001
-```
-
-你可以直接通过命令行启动：
+Start the HTTP server with SSE transport:
 
 ```bash
 finance-mcp \
-  backend=mcp \
-  mcp.transport=stdio
-```
-
-或者在需要 TCP 方式时：
-
-```bash
-finance-mcp \
-  backend=mcp \
+  config=default,ths \
+  mcp.transport=sse \
   mcp.host=0.0.0.0 \
-  mcp.port=8001
+  mcp.port=8001 \
+  llm.default.model_name=qwen3-30b-a3b-thinking-2507 \
+  disabled_flows='["tavily_search","mock_search","react_agent"]'
 ```
 
-之后即可在支持 MCP 的客户端中，将 Finance MCP 配置为一个工具服务器。
+The service will be available at: `http://0.0.0.0:8001/sse`
 
-### 2. 以 HTTP 服务方式运行
+### Configuration Parameters
 
-`default.yaml` 中同时给出了 HTTP 服务配置：
+| Parameter                | Description                                                                                                                                                                                 | Example                                                                |
+|--------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------|
+| `config`                 | Configuration files to load (comma-separated). Available: `default` (core flows), `ths` (TongHuaShun stock data), `stream_agent` (streaming agents), `external_mcp` (external MCP services) | `config=default,ths`                                                   |
+| `mcp.transport`          | Transport mode: `stdio` (Claude Desktop), `sse` (web apps), `http` (RESTful), `streamable-http`                                                                                             | `mcp.transport=stdio`                                                  |
+| `mcp.host`               | Host address (for sse/http transports only)                                                                                                                                                 | `mcp.host=0.0.0.0`                                                     |
+| `mcp.port`               | Port number (for sse/http transports only)                                                                                                                                                  | `mcp.port=8001`                                                        |
+| `llm.default.model_name` | Default LLM model name (overrides config file)                                                                                                                                              | `llm.default.model_name=qwen3-30b-a3b-thinking-2507`                   |
+| `disabled_flows`         | JSON array of flow names to disable. **Tip**: Disable flows if you don't have the required API keys (e.g., `tavily_search` requires `TAVILY_API_KEY`)                                       | `disabled_flows='[\"tavily_search\",\"mock_search\",\"react_agent\"]'` |
 
-```yaml
-http:
-  host: "0.0.0.0"
-  port: 8002
-```
+### Environment Variables
 
-启动命令示例：
+| Variable              | Required    | Description                                |
+|-----------------------|-------------|--------------------------------------------|
+| `FLOW_LLM_API_KEY`    | ✅ Yes       | API key for OpenAI-compatible LLM service  |
+| `FLOW_LLM_BASE_URL`   | ✅ Yes       | Base URL for OpenAI-compatible LLM service |
+| `DASHSCOPE_API_KEY`   | ⚠️ Optional | For DashScope search and entity extraction |
+| `TUSHARE_API_TOKEN`   | ⚠️ Optional | For historical data analysis               |
+| `TAVILY_API_KEY`      | ⚠️ Optional | For Tavily web search                      |
+| `BAILIAN_MCP_API_KEY` | ⚠️ Optional | For external MCP services                  |
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! To get started:
+
+1. Install the package in development mode:
 
 ```bash
-finance-mcp \
-  backend=http \
-  http.host=0.0.0.0 \
-  http.port=8002
+pip install -e .
 ```
 
-随后即可通过 HTTP 接口访问由 Flow 定义的各类算子能力。
+2. Install pre-commit hooks:
 
----
-
-## 💻 示例：运行研究工作流
-
-仓库下的 `test_op/` 目录中包含若干端到端示例脚本，可作为你的参考实现。
-
-### 1. 高层研究流程：`test_conduct_research.py`
-
-```python
-from finance_mcp import FinanceMcpApp
-from finance_mcp.core.agent import ConductResearchOp, ThinkToolOp
-from finance_mcp.core.search import DashscopeSearchOp
-from finance_mcp.core.utils import run_stream_op
-
-async with FinanceMcpApp():
-    op = ConductResearchOp()
-    op.ops.search_op = DashscopeSearchOp()
-    op.ops.think_op = ThinkToolOp()
-
-    research_topic = "茅台公司未来业绩"
-    async for _ in run_stream_op(op, enable_print=True, research_topic=research_topic):
-        pass
+```bash
+pip install pre-commit
+pre-commit run --all-files
 ```
 
-该脚本展示了：
-
-- 如何在 `FinanceMcpApp` 上下文中构建研究算子。
-- 如何为研究算子注入具体的搜索与思考工具。
-- 如何以「流式」方式打印中间结果，方便调试和人工检查。
-
-### 2. Dashscope 深度研究：`test_dashscope_deep_research.py`
-
-```python
-from finance_mcp.core.agent import DashscopeDeepResearchOp
-from finance_mcp.core.utils import run_stream_op
-
-query = "茅台公司未来业绩"
-op = DashscopeDeepResearchOp()
-
-async for _ in run_stream_op(op, enable_print=True, query=query):
-    pass
-```
-
-这个脚本聚焦于 `DashscopeDeepResearchOp` 本身，适合快速验证深度研究链路是否正常工作。
+3. Submit a pull request with your changes.
 
 ---
 
-## 📚 文档与资源
+## ⚖️ License
 
-- **在线文档**：<https://flowllm-ai.github.io/finance-mcp/>
-- **配置示例**：`finance_mcp/config/default.yaml`
-- **核心模块**：`finance_mcp/core/{agent,crawl,extract,search,utils}`
-- **示例脚本**：`test_op/` 下的若干 `*_op.py` 文件
-- **相关项目**：
-  - FlowLLM：<https://github.com/flowllm-ai/flowllm>
-  - Crawl4AI：<https://github.com/unclecode/crawl4ai>
+This project is licensed under the Apache License 2.0 - see the [LICENSE](./LICENSE) file for details.
 
 ---
 
-## 🤝 参与贡献
-
-我们非常欢迎社区同学参与共建 Finance MCP，包括但不限于：
-
-- **新增金融场景算子 / Flow**：例如特定行业研究模板、量化指标分析等。
-- **接入更多数据源 / 搜索后端**：如新增券商研报源、宏观数据服务等。
-- **改进文档与示例**：补充从零搭建金融研究 Agent 的完整教程。
-
-你可以通过提交 Issue 或 Pull Request 的方式参与，也可以在讨论区分享你的使用经验与最佳实践。
-
----
-
-## ⚖️ 许可证
-
-本项目基于 Apache License 2.0 开源，详情参见 [LICENSE](./LICENSE) 文件。
-
----
-
-## ⭐ Star 历史
+## 📈 Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=flowllm-ai/finance-mcp&type=Date)](https://www.star-history.com/#flowllm-ai/finance-mcp&Date)

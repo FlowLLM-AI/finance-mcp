@@ -12,11 +12,10 @@ long-text outputs.
 The implementation also handles Playwright browser installation on demand and
 adds a small caching layer based on the parent :class:`BaseAsyncToolOp`.
 """
-
-import shutil
-import subprocess
+import asyncio
 import warnings
 
+from loguru import logger
 from pydantic.warnings import PydanticDeprecatedSince20
 
 warnings.filterwarnings("ignore", category=PydanticDeprecatedSince20)
@@ -25,7 +24,6 @@ from crawl4ai import BrowserConfig, CrawlerRunConfig, CacheMode, AsyncWebCrawler
 from flowllm.core.context import C
 from flowllm.core.op import BaseAsyncToolOp
 from flowllm.core.schema import ToolCall
-from loguru import logger
 
 from ..utils import get_random_user_agent
 
@@ -54,6 +52,9 @@ class Crawl4aiOp(BaseAsyncToolOp):
     **kwargs:
         Additional keyword arguments forwarded to :class:`BaseAsyncToolOp`.
     """
+
+    # Class variable to track if playwright has been installed
+    _playwright_installed = False
 
     def __init__(
         self,
@@ -126,21 +127,16 @@ class Crawl4aiOp(BaseAsyncToolOp):
 
         self.crawler_config = CrawlerRunConfig(cache_mode=CacheMode.BYPASS, verbose=True)
 
-        try:
-            from playwright.async_api import async_playwright
-
-            async with async_playwright() as p:
-                logger.info(p.chromium.executable_path)
-
-        except Exception as e:
-            logger.exception(f"Playwright browsers not found, installing... with e={e.args}")
-
-            playwright_path = shutil.which("playwright")
-            if playwright_path:
-                subprocess.run([playwright_path, "install", "chromium"], check=True)
-            else:
-                subprocess.run(["python", "-m", "playwright", "install", "chromium"], check=True)
-            logger.info("Playwright browsers installed successfully.")
+        # Install playwright only once using class variable
+        if not Crawl4aiOp._playwright_installed:
+            process = await asyncio.create_subprocess_exec(
+                'playwright', 'install',
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE
+            )
+            stdout, stderr = await process.communicate()
+            logger.info(f"Playwright installation completed with exit stdout={stdout} stderr={stderr}")
+            Crawl4aiOp._playwright_installed = True
 
         # Run the asynchronous crawl and capture the Markdown content.
         async with AsyncWebCrawler(config=self.browser_config) as crawler:
