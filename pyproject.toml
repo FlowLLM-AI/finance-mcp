@@ -5,14 +5,19 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "finance-mcp"
 dynamic = ["version"]
-description = "A finance MCP server enhanced by LLMs, web search tools, and Crawl4AI for financial research and analysis."
+description = "LLM-powered MCP server for building financial deep-research agents, integrating web search, Crawl4AI scraping, and entity extraction into composable analysis flows."
 authors = [
     { name = "jinli.yl", email = "jinli.yl@alibaba-inc.com" },
     { name = "taoshuchang.tsc", email = "taoshuchang.tsc@alibaba-inc.com" },
 ]
 license = {file = "LICENSE"}
 readme = "README.md"
-keywords = ["finance", "research", "analysis", "agent", "mcp", "tushare", "flowllm", "crawl4ai"]
+keywords = [
+  "llm", "agent", 
+  "deep-research", "financial-research",
+  "mcp", "model-context-protocol", "flowllm",
+  "crawl4ai", "web-search", "tushare"
+]
 requires-python = ">=3.10"
 
 classifiers = [
