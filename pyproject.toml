@@ -45,7 +45,6 @@ dev = [
     "mkdocs-shadcn",
 ]
 
-
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["finance_mcp*"]

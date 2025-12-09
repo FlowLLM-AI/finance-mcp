@@ -20,11 +20,11 @@ flow:
     flow_content: Crawl4aiLongTextOp() >> ExtractLongTextOp()
     enable_cache: true
     cache_expire_hours: 1
-    description: ""
+    description: "Web content parsing tool: retrieves and formats web page content based on the provided URL."
     input_schema:
       url:
         type: string
-        description: "user query"
+        description: "the provided URL"
         required: true
 
   extract_entities_code:
