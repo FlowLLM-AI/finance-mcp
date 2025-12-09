@@ -9,6 +9,7 @@ description = "A finance MCP server enhanced by LLMs, web search tools, and Craw
 authors = [
     { name = "jinli.yl", email = "jinli.yl@alibaba-inc.com" },
     { name = "taoshuchang.tsc", email = "taoshuchang.tsc@alibaba-inc.com" },
+    { name = "congling.chr", email = "congling.chr@alibaba-inc.com" }
 ]
 license = {file = "LICENSE"}
 readme = "README.md"
