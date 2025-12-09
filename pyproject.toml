@@ -9,6 +9,7 @@ description = "LLM-powered MCP server for building financial deep-research agent
 authors = [
     { name = "jinli.yl", email = "jinli.yl@alibaba-inc.com" },
     { name = "taoshuchang.tsc", email = "taoshuchang.tsc@alibaba-inc.com" },
+    { name = "congling.chr", email = "congling.chr@alibaba-inc.com" }
 ]
 license = {file = "LICENSE"}
 readme = "README.md"

@@ -26,7 +26,7 @@ class DashscopeSearchOp(BaseAsyncToolOp):
 
     def __init__(
         self,
-        model: str = "qwen-plus",
+        model: str = "qwen-flash",
         search_strategy: str = "max",
         enable_role_prompt: bool = True,
         **kwargs,
