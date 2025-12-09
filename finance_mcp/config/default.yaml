@@ -31,6 +31,7 @@ flow:
     flow_content: ExtractEntitiesCodeOp() << DashscopeSearchOp()
     enable_cache: true
     cache_expire_hours: 1
+    description: "从查询中提取金融实体,包括股票、债券、基金、加密货币、指数、商品、ETF等类型,并查找对应的代码"
 
   execute_code:
     flow_content: ExecuteCodeOp()
