@@ -201,14 +201,52 @@ Add this configuration to your MCP client to connect to the remote SSE server:
 }
 ```
 
+---
+
+### HTTP RESTful API with Streaming Support
+
+Finance MCP also supports HTTP RESTful API mode with streaming capabilities. This allows you to access flows directly via HTTP endpoints, not just through MCP protocol.
+
+#### Step 1: Start HTTP Server
+
+Start the Finance MCP server with HTTP backend:
+
+```bash
+finance-mcp \
+  config=default,stream_agent \
+  backend=http \
+  http.host=0.0.0.0 \
+  http.port=8002 \
+  llm.default.model_name=qwen3-30b-a3b-thinking-2507
+```
+
+#### Step 2: Make Streaming HTTP Requests
+
+All flows configured with `stream: true` will be exposed as streaming HTTP endpoints. Responses are streamed in real-time using Server-Sent Events (SSE) format.
+
+Example: Request streaming deep research (inspired by [open_deep_research](https://github.com/langchain-ai/open_deep_research)):
+
+```bash
+curl -X POST http://0.0.0.0:8002/langchain_deep_research \
+  -H "Content-Type: application/json" \
+  -d '{"query": "I want to learn about Kweichow Moutai stock"}'
+```
+
+The response will be streamed in real-time, showing:
+- Thinking process and reasoning
+- Tool calls and intermediate results
+- Final comprehensive answer
+
+**Note**: By default, this uses DashScope search, but you can replace it with other search backends (e.g., Tavily) by modifying the `stream_agent.yaml` configuration.
+
 ### Configuration Parameters
 
-| Parameter                | Description                                                                                                                                                                                 | Example                                                |
-|--------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------|
-| `config`                 | Configuration files to load (comma-separated). Available: `default` (core flows), `ths` (TongHuaShun stock data), `stream_agent` (streaming agents), `external_mcp` (external MCP services) | `config=default,ths`                                     |
-| `mcp.transport`          | Transport mode: `stdio` (Claude Desktop), `sse` (web apps), `http` (RESTful), `streamable-http`                                                                                             | `mcp.transport=stdio`                                    |
-| `mcp.host`               | Host address (for sse/http transports only)                                                                                                                                                 | `mcp.host=0.0.0.0`                                       |
-| `mcp.port`               | Port number (for sse/http transports only)                                                                                                                                                  | `mcp.port=8001`                                          |
+| Parameter                | Description                                                                                                                                                                                 | Example                                              |
+|--------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------|
+| `config`                 | Configuration files to load (comma-separated). Available: `default` (core flows), `ths` (TongHuaShun stock data), `stream_agent` (streaming agents), `external_mcp` (external MCP services) | `config=default,ths`                                 |
+| `mcp.transport`          | Transport mode: `stdio` (Claude Desktop), `sse` (web apps), `http` (RESTful), `streamable-http`                                                                                             | `mcp.transport=stdio`                                |
+| `mcp.host`               | Host address (for sse/http transports only)                                                                                                                                                 | `mcp.host=0.0.0.0`                                   |
+| `mcp.port`               | Port number (for sse/http transports only)                                                                                                                                                  | `mcp.port=8001`                                      |
 | `llm.default.model_name` | Default LLM model name (overrides config file)                                                                                                                                              | `llm.default.model_name=qwen3-30b-a3b-thinking-2507` |
 | `disabled_flows`         | JSON array of flow names to disable. **Tip**: Disable flows if you don't have the required API keys (e.g., `tavily_search` requires `TAVILY_API_KEY`)                                       | `disabled_flows='["react_agent"]'`                   |
 
@@ -225,7 +263,7 @@ Add this configuration to your MCP client to connect to the remote SSE server:
 
 ---
 
-### Using with FastMCP Client (Service Mode)
+### Using with FastMCP Client
 
 When running in Service Mode, you can also use the [FastMCP](https://gofastmcp.com/getting-started/welcome) Python client to directly access the server:
 
