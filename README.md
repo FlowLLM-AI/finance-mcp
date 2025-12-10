@@ -1,6 +1,6 @@
 <p align="center" style="display:flex; align-items:center; justify-content:center; gap:15px; text-decoration:none;">
   <img src="docs/figure/logo.png" alt="Finance MCP Logo" width="50"> 
-  <strong style="font-size: 32px;">Finance-MCP</strong>
+  <strong style="font-size: 60px;">Finance-MCP</strong>
 </p>
 
 <p align="center">
