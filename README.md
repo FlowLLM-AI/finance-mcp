@@ -46,53 +46,6 @@ search, and more, helping you quickly build professional financial research agen
 
 ---
 
-## 🚀 MCP Services
-
-### Default MCP Services
-
-| Service Name              | Description                                                                                                   | Dependencies        | Input Parameters                                                                           |
-|---------------------------|---------------------------------------------------------------------------------------------------------------|---------------------|--------------------------------------------------------------------------------------------|
-| **history_calculate**     | Price-volume analysis based on Tushare A-share historical data                                                | `TUSHARE_API_TOKEN` | `code`: `601899`<br>`query`: How much did it rise in the past week? Any MACD golden cross? |
-| **crawl_url**             | Scrape and parse web content                                                                                  | `crawl4ai`          | `url`: `https://example.com`                                                               |
-| **extract_entities_code** | Identify financial entities from text and complete stock codes (currently uses dashscope_search, replaceable) | `DASHSCOPE_API_KEY` | `query`: I want to learn about Kweichow Moutai stock                                       |
-| **execute_code**          | Execute arbitrary Python code                                                                                 | -                   | `code`: `print(1+1)`                                                                       |
-| **execute_shell**         | Execute shell commands                                                                                        | -                   | `command`: `ls`                                                                            |
-| **dashscope_search**      | Web search based on DashScope                                                                                 | `DASHSCOPE_API_KEY` | `query`: Recent news about Zijin Mining                                                    |
-| **tavily_search**         | Web search based on Tavily                                                                                    | `TAVILY_API_KEY`    | `query`: financial news                                                                    |
-| **mock_search**           | Mock search for LLM simulation                                                                                | -                   | `query`: test query                                                                        |
-| **react_agent**           | ReAct agent combining multiple tools for answering complex questions                                          | -                   | `query`: Help me analyze Zijin Mining's trend for the next week                            |
-
-### TongHuaShun MCP Services
-
-> **Note**: These MCP services are implemented via crawl4ai. High concurrency may result in IP blocking.
-
-| Service Name           | Description                                                                                                                                                                                                         | Dependencies | Input Parameters                                                                                               |
-|------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|----------------------------------------------------------------------------------------------------------------|
-| **crawl_ths_company**  | Get company profile information by A-share stock code, including details, executive introductions, issuance-related info, subsidiaries, etc., and return query-relevant information                                 | `crawl4ai`   | `code`: 600519<br>`query`: What are the company's main business and executive situation?                       |
-| **crawl_ths_holder**   | Get shareholder research information by A-share stock code, including shareholder count, top 10 circulating shareholders, top 10 shareholders, bondholders, controlling hierarchy, etc.                             | `crawl4ai`   | `code`: 600519<br>`query`: How have shareholder count and major shareholder structure changed recently?        |
-| **crawl_ths_operate**  | Get operational analysis information by A-share stock code, including main business introduction, operational data, main business composition, customers & suppliers, business review, product prices, etc.         | `crawl4ai`   | `code`: 600519<br>`query`: What is the company's main business composition and operational situation?          |
-| **crawl_ths_equity**   | Get equity structure information by A-share stock code, including unlock schedule, total equity composition, A-share structure chart, historical equity changes, etc.                                               | `crawl4ai`   | `code`: 600519<br>`query`: What restricted shares will be unlocked in the next year?                           |
-| **crawl_ths_capital**  | Get capital operation information by A-share stock code, including funding sources, project investments, M&A, equity investments, IPO participation, equity transfers, pledge/unfreeze, etc.                        | `crawl4ai`   | `code`: 600519<br>`query`: What recent M&A or capital operations has the company had?                          |
-| **crawl_ths_worth**    | Get earnings forecast information by A-share stock code, including performance forecasts, detailed forecast tables, research report ratings, etc.                                                                   | `crawl4ai`   | `code`: 600519<br>`query`: What are the earnings forecasts and institutional ratings for the next three years? |
-| **crawl_ths_news**     | Get news and announcements by A-share stock code, including news-price correlation, announcement lists, hot news, research report lists, etc.                                                                       | `crawl4ai`   | `code`: 600519<br>`query`: What are the recent important announcements or news?                                |
-| **crawl_ths_concept**  | Get concept and theme information by A-share stock code, including regular concepts, other concepts, theme highlights, concept comparison, etc.                                                                     | `crawl4ai`   | `code`: 600519<br>`query`: What concept themes does this stock involve?                                        |
-| **crawl_ths_position** | Get major position information by A-share stock code, including institutional holdings summary, holding details, takeover situations, IPO allocation institutions, etc.                                             | `crawl4ai`   | `code`: 600519<br>`query`: What is the institutional holding trend and major institutional holdings?           |
-| **crawl_ths_finance**  | Get financial analysis information by A-share stock code, including financial diagnosis, financial indicators, indicator change explanations, asset-liability composition, financial reports, DuPont analysis, etc. | `crawl4ai`   | `code`: 600519<br>`query`: What is the company's profitability and financial structure?                        |
-| **crawl_ths_bonus**    | Get dividend and financing information by A-share stock code, including dividend diagnosis, dividend history, additional issuance allocation details, additional issuance overview, rights issue overview, etc.     | `crawl4ai`   | `code`: 600519<br>`query`: What is the historical dividend situation and recent financing arrangements?        |
-| **crawl_ths_event**    | Get company events by A-share stock code, including executive shareholding changes, shareholder shareholding changes, guarantee details, violations, institutional research, investor interactions, etc.            | `crawl4ai`   | `code`: 600519<br>`query`: What are the recent major events or executive shareholding changes?                 |
-| **crawl_ths_field**    | Get industry comparison information by A-share stock code, including industry position, industry news, etc.                                                                                                         | `crawl4ai`   | `code`: 600519<br>`query`: What is the company's position in its industry?                                     |
-
-### External MCP Services
-
-> **Note**: External MCP services are called via SSE (Server-Sent Events). You need to configure the `BAILIAN_MCP_API_KEY` environment variable in `.env`.
-
-| Service Name       | Description                               | Dependencies          | Input Parameters                        |
-|--------------------|-------------------------------------------|-----------------------|-----------------------------------------|
-| **tongyi_search**  | WebSearch service based on DashScope      | `BAILIAN_MCP_API_KEY` | `query`: Recent news about Zijin Mining |
-| **bochaai_search** | BochaAI search service based on DashScope | `BAILIAN_MCP_API_KEY` | `query`: financial news                 |
-
----
-
 ## 🚀 Quick Start
 
 ### Installation
@@ -109,22 +62,11 @@ Or using uv:
 uv pip install finance-mcp
 ```
 
-### Usage Modes
-
-Finance MCP supports two usage modes:
-
-1. **Stdio Mode**: Direct execution via `uvx`, suitable for local MCP clients (Claude Desktop, Cursor, etc.)
-2. **Service Mode**: Start as HTTP/SSE server, suitable for remote deployment and web applications
-
 ---
 
-### Mode 1: Stdio Mode (Direct Execution)
+## Stdio Mode
 
 This mode runs Finance MCP directly through `uvx`, communicating via standard input/output. Ideal for local MCP clients.
-
-#### Step 1: Configure MCP Client
-
-Add this configuration to your MCP client (e.g., Claude Desktop, Cursor):
 
 ```json
 {
@@ -153,7 +95,7 @@ Add this configuration to your MCP client (e.g., Claude Desktop, Cursor):
 
 ---
 
-### Mode 2: Service Mode (HTTP/SSE Server)
+## Service Mode (HTTP/SSE Server)
 
 This mode starts Finance MCP as a standalone HTTP/SSE server that can be accessed remotely.
 
@@ -197,9 +139,81 @@ Add this configuration to your MCP client to connect to the remote SSE server:
 }
 ```
 
+#### Step 4: Using with FastMCP Client
+
+When running in Service Mode, you can also use the [FastMCP](https://gofastmcp.com/getting-started/welcome) Python
+client to directly access the server:
+
+```python
+import asyncio
+from fastmcp import Client
+
+
+async def main():
+    async with Client("http://0.0.0.0:8001/sse") as client:
+        for tool in client.list_tools():
+            print(tool)
+
+        result = await client.call_tool(
+            name="dashscope_search",
+            arguments={"query": "Recent news about Zijin Mining"}
+        )
+    print(result)
+
+
+asyncio.run(main())
+```
+
 ---
 
-### HTTP RESTful API with Streaming Support
+## 🚀 MCP Tools
+
+#### Default Tools
+
+| Tool Name                 | Description                                                                                                   | Dependencies        | Input Parameters                                                                           |
+|---------------------------|---------------------------------------------------------------------------------------------------------------|---------------------|--------------------------------------------------------------------------------------------|
+| **history_calculate**     | Price-volume analysis based on Tushare A-share historical data                                                | `TUSHARE_API_TOKEN` | `code`: `601899`<br>`query`: How much did it rise in the past week? Any MACD golden cross? |
+| **crawl_url**             | Scrape and parse web content                                                                                  | `crawl4ai`          | `url`: `https://example.com`                                                               |
+| **extract_entities_code** | Identify financial entities from text and complete stock codes (currently uses dashscope_search, replaceable) | `DASHSCOPE_API_KEY` | `query`: I want to learn about Kweichow Moutai stock                                       |
+| **execute_code**          | Execute arbitrary Python code                                                                                 | -                   | `code`: `print(1+1)`                                                                       |
+| **execute_shell**         | Execute shell commands                                                                                        | -                   | `command`: `ls`                                                                            |
+| **dashscope_search**      | Web search based on DashScope                                                                                 | `DASHSCOPE_API_KEY` | `query`: Recent news about Zijin Mining                                                    |
+| **tavily_search**         | Web search based on Tavily                                                                                    | `TAVILY_API_KEY`    | `query`: financial news                                                                    |
+| **mock_search**           | Mock search for LLM simulation                                                                                | -                   | `query`: test query                                                                        |
+| **react_agent**           | ReAct agent combining multiple tools for answering complex questions                                          | -                   | `query`: Help me analyze Zijin Mining's trend for the next week                            |
+
+#### TongHuaShun Tools
+
+> **Note**: These tools are implemented via crawl4ai. High concurrency may result in IP blocking.
+
+| Tool Name              | Description                                                                                                                                                                                                         | Dependencies | Input Parameters                                                                                               |
+|------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|----------------------------------------------------------------------------------------------------------------|
+| **crawl_ths_company**  | Get company profile information by A-share stock code, including details, executive introductions, issuance-related info, subsidiaries, etc., and return query-relevant information                                 | `crawl4ai`   | `code`: 600519<br>`query`: What are the company's main business and executive situation?                       |
+| **crawl_ths_holder**   | Get shareholder research information by A-share stock code, including shareholder count, top 10 circulating shareholders, top 10 shareholders, bondholders, controlling hierarchy, etc.                             | `crawl4ai`   | `code`: 600519<br>`query`: How have shareholder count and major shareholder structure changed recently?        |
+| **crawl_ths_operate**  | Get operational analysis information by A-share stock code, including main business introduction, operational data, main business composition, customers & suppliers, business review, product prices, etc.         | `crawl4ai`   | `code`: 600519<br>`query`: What is the company's main business composition and operational situation?          |
+| **crawl_ths_equity**   | Get equity structure information by A-share stock code, including unlock schedule, total equity composition, A-share structure chart, historical equity changes, etc.                                               | `crawl4ai`   | `code`: 600519<br>`query`: What restricted shares will be unlocked in the next year?                           |
+| **crawl_ths_capital**  | Get capital operation information by A-share stock code, including funding sources, project investments, M&A, equity investments, IPO participation, equity transfers, pledge/unfreeze, etc.                        | `crawl4ai`   | `code`: 600519<br>`query`: What recent M&A or capital operations has the company had?                          |
+| **crawl_ths_worth**    | Get earnings forecast information by A-share stock code, including performance forecasts, detailed forecast tables, research report ratings, etc.                                                                   | `crawl4ai`   | `code`: 600519<br>`query`: What are the earnings forecasts and institutional ratings for the next three years? |
+| **crawl_ths_news**     | Get news and announcements by A-share stock code, including news-price correlation, announcement lists, hot news, research report lists, etc.                                                                       | `crawl4ai`   | `code`: 600519<br>`query`: What are the recent important announcements or news?                                |
+| **crawl_ths_concept**  | Get concept and theme information by A-share stock code, including regular concepts, other concepts, theme highlights, concept comparison, etc.                                                                     | `crawl4ai`   | `code`: 600519<br>`query`: What concept themes does this stock involve?                                        |
+| **crawl_ths_position** | Get major position information by A-share stock code, including institutional holdings summary, holding details, takeover situations, IPO allocation institutions, etc.                                             | `crawl4ai`   | `code`: 600519<br>`query`: What is the institutional holding trend and major institutional holdings?           |
+| **crawl_ths_finance**  | Get financial analysis information by A-share stock code, including financial diagnosis, financial indicators, indicator change explanations, asset-liability composition, financial reports, DuPont analysis, etc. | `crawl4ai`   | `code`: 600519<br>`query`: What is the company's profitability and financial structure?                        |
+| **crawl_ths_bonus**    | Get dividend and financing information by A-share stock code, including dividend diagnosis, dividend history, additional issuance allocation details, additional issuance overview, rights issue overview, etc.     | `crawl4ai`   | `code`: 600519<br>`query`: What is the historical dividend situation and recent financing arrangements?        |
+| **crawl_ths_event**    | Get company events by A-share stock code, including executive shareholding changes, shareholder shareholding changes, guarantee details, violations, institutional research, investor interactions, etc.            | `crawl4ai`   | `code`: 600519<br>`query`: What are the recent major events or executive shareholding changes?                 |
+| **crawl_ths_field**    | Get industry comparison information by A-share stock code, including industry position, industry news, etc.                                                                                                         | `crawl4ai`   | `code`: 600519<br>`query`: What is the company's position in its industry?                                     |
+
+#### External MCP Services
+
+> **Note**: External MCP services are called via SSE (Server-Sent Events). You need to configure the `BAILIAN_MCP_API_KEY` environment variable in `.env`.
+
+| Service Name       | Description                               | Dependencies          | Input Parameters                        |
+|--------------------|-------------------------------------------|-----------------------|-----------------------------------------|
+| **tongyi_search**  | WebSearch service based on DashScope      | `BAILIAN_MCP_API_KEY` | `query`: Recent news about Zijin Mining |
+| **bochaai_search** | BochaAI search service based on DashScope | `BAILIAN_MCP_API_KEY` | `query`: financial news                 |
+
+---
+
+## HTTP RESTful API with Streaming Support
 
 Finance MCP also supports HTTP RESTful API mode with streaming capabilities. This allows you to access flows directly via HTTP endpoints, not just through MCP protocol.
 
@@ -235,7 +249,9 @@ The response will be streamed in real-time, showing:
 
 **Note**: By default, this uses DashScope search, but you can replace it with other search backends (e.g., Tavily) by modifying the `stream_agent.yaml` configuration.
 
-### Server Configuration Parameters
+---
+
+## Server Configuration Parameters
 
 | Parameter                | Description                                                                                                                                                                                 | Example                                              |
 |--------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------|
@@ -248,7 +264,7 @@ The response will be streamed in real-time, showing:
 
 For the full set of available options and defaults, refer to [default.yaml](./finance_mcp/config/default.yaml).
 
-### Environment Variables
+#### Environment Variables
 
 | Variable              | Required    | Description                                |
 |-----------------------|-------------|--------------------------------------------|
@@ -258,30 +274,6 @@ For the full set of available options and defaults, refer to [default.yaml](./fi
 | `TUSHARE_API_TOKEN`   | ⚠️ Optional | For historical data analysis               |
 | `TAVILY_API_KEY`      | ⚠️ Optional | For Tavily web search                      |
 | `BAILIAN_MCP_API_KEY` | ⚠️ Optional | For external MCP services                  |
-
----
-
-### Using with FastMCP Client
-
-When running in Service Mode, you can also use the [FastMCP](https://gofastmcp.com/getting-started/welcome) Python client to directly access the server:
-
-```python
-import asyncio
-from fastmcp import Client
-
-async def main():
-    async with Client("http://0.0.0.0:8001/sse") as client:
-        for tool in client.list_tools():
-            print(tool)
-        
-        result = await client.call_tool(
-            name="dashscope_search",
-            arguments={"query": "Recent news about Zijin Mining"}
-        )
-    print(result)
-
-asyncio.run(main())
-```
 
 ---
 
