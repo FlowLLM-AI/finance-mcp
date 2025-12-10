@@ -65,7 +65,7 @@ uv pip install finance-mcp
 
 ---
 
-## Stdio Mode
+### Stdio Mode
 
 This mode runs Finance MCP directly through `uvx`, communicating via standard input/output. Ideal for local MCP clients.
 
@@ -96,11 +96,11 @@ This mode runs Finance MCP directly through `uvx`, communicating via standard in
 
 ---
 
-## Service Mode (HTTP/SSE Server)
+#### Service Mode (HTTP/SSE Server)
 
 This mode starts Finance MCP as a standalone HTTP/SSE server that can be accessed remotely.
 
-#### Step 1: Configure Environment Variables
+**Step 1**: Configure Environment Variables
 
 Copy `example.env` to `.env` and fill in your API keys:
 
@@ -109,7 +109,7 @@ cp example.env .env
 # Edit .env and fill in your API keys
 ```
 
-#### Step 2: Start the Server
+**Step 2**: Start the Server
 
 Start the Finance MCP server with SSE transport:
 
@@ -125,7 +125,7 @@ finance-mcp \
 
 The service will be available at: `http://0.0.0.0:8001/sse`
 
-#### Step 3: Connect from MCP Client
+**Step 3**: Connect from MCP Client
 
 Add this configuration to your MCP client to connect to the remote SSE server:
 
@@ -140,7 +140,7 @@ Add this configuration to your MCP client to connect to the remote SSE server:
 }
 ```
 
-#### Step 4: Using with FastMCP Client
+**Step 4**: Using with FastMCP Client
 
 When running in Service Mode, you can also use the [FastMCP](https://gofastmcp.com/getting-started/welcome) Python
 client to directly access the server:
@@ -164,6 +164,14 @@ async def main():
 
 asyncio.run(main())
 ```
+
+#### One-Command Test
+
+```bash
+python test_op/test_project_sse.py
+```
+
+This will start the server, connect via FastMCP client, and test all available tools automatically.
 
 ---
 
