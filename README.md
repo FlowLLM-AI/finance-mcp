@@ -190,6 +190,7 @@ Add this configuration to your MCP client to connect to the remote SSE server:
 {
   "mcpServers": {
     "finance-mcp": {
+      "type": "sse",
       "url": "http://0.0.0.0:8001/sse"
     }
   }
