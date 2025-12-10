@@ -5,8 +5,7 @@
   <a href="https://pypi.org/project/finance-mcp/"><img src="https://img.shields.io/pypi/v/finance-mcp.svg?logo=pypi" alt="PyPI 版本"></a>
   <a href="./LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-black" alt="许可证"></a>
   <a href="https://github.com/flowllm-ai/finance-mcp"><img src="https://img.shields.io/github/stars/flowllm-ai/finance-mcp?style=social" alt="GitHub Stars"></a>
-  [![English](https://img.shields.io/badge/English-Click-yellow)](README.md)
-  [![简体中文](https://img.shields.io/badge/简体中文-点击查看-orange)](README_ZH.md)
+  <a href="./README.md">English</a> | <a href="./README_ZH.md">中文</a>
 </p>
 
 ---
