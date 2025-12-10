@@ -4,18 +4,18 @@
   <strong>MCP-Server for Financial Research Agents</strong>
 </p>
 
-<p align="center">
+<p>
   <a href="https://pypi.org/project/finance-mcp/"><img src="https://img.shields.io/badge/python-3.10+-blue" alt="Python Version"></a>
   <a href="https://pypi.org/project/finance-mcp/"><img src="https://img.shields.io/pypi/v/finance-mcp.svg?logo=pypi" alt="PyPI Version"></a>
   <a href="./LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-black" alt="License"></a>
   <a href="https://github.com/flowllm-ai/finance-mcp"><img src="https://img.shields.io/github/stars/flowllm-ai/finance-mcp?style=social" alt="GitHub Stars"></a>
 </p>
 
-<p align="center">
+<p>
   <em><sub>If you think there are any financial MCP tools that are necessary, please submit an issue to us, and we will respond as soon as possible.</sub></em>
 </p>
 
-<p align="center">
+<p>
   <a href="./README_ZH.md">简体中文</a> | English
 </p>
 
