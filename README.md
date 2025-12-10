@@ -235,7 +235,7 @@ The response will be streamed in real-time, showing:
 
 **Note**: By default, this uses DashScope search, but you can replace it with other search backends (e.g., Tavily) by modifying the `stream_agent.yaml` configuration.
 
-### Configuration Parameters
+### Server Configuration Parameters
 
 | Parameter                | Description                                                                                                                                                                                 | Example                                              |
 |--------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------|
@@ -245,6 +245,8 @@ The response will be streamed in real-time, showing:
 | `mcp.port`               | Port number (for sse/http transports only)                                                                                                                                                  | `mcp.port=8001`                                      |
 | `llm.default.model_name` | Default LLM model name (overrides config file)                                                                                                                                              | `llm.default.model_name=qwen3-30b-a3b-thinking-2507` |
 | `disabled_flows`         | JSON array of flow names to disable. **Tip**: Disable flows if you don't have the required API keys (e.g., `tavily_search` requires `TAVILY_API_KEY`)                                       | `disabled_flows='["react_agent"]'`                   |
+
+For the full set of available options and defaults, refer to [default.yaml](./finance_mcp/config/default.yaml).
 
 ### Environment Variables
 
@@ -269,6 +271,9 @@ from fastmcp import Client
 
 async def main():
     async with Client("http://0.0.0.0:8001/sse") as client:
+        for tool in client.list_tools():
+            print(tool)
+        
         result = await client.call_tool(
             name="dashscope_search",
             arguments={"query": "Recent news about Zijin Mining"}
