@@ -42,7 +42,7 @@ search, and more, helping you quickly build professional financial research agen
 
 ## 📰 Latest Updates
 
-- **[2025-01]** 🎉 Released finance-mcp v0.1.1
+- **[2025-12]** 🎉 Released finance-mcp v0.1.x
 
 ---
 
