@@ -8,7 +8,7 @@
   <a href="./README.md">English</a> | <a href="./README_ZH.md">中文</a>
 </p>
 
----
+
 
 ## 📖 Project Overview
 
@@ -25,13 +25,12 @@ search, and more, helping you quickly build professional financial research agen
 - ✅ **Smart Caching**: Built-in multi-level caching mechanism to improve efficiency and reduce costs
 - ✅ **Modular Design**: Each functional module is independently configurable, supporting enable/disable as needed
 
----
 
 ## 📰 Latest Updates
 
 - **[2025-12]** 🎉 Released finance-mcp v0.1.x
 
----
+
 
 ## 🚀 Quick Start
 
@@ -49,7 +48,7 @@ Or using uv:
 uv pip install finance-mcp
 ```
 
----
+
 
 ### Stdio Mode
 
@@ -80,7 +79,7 @@ This mode runs Finance MCP directly through `uvx`, communicating via standard in
 }
 ```
 
----
+
 
 #### Service Mode (HTTP/SSE Server)
 
@@ -159,7 +158,7 @@ python test_op/test_project_sse.py
 
 This will start the server, connect via FastMCP client, and test all available tools automatically.
 
----
+
 
 ## 🚀 MCP Tools
 
@@ -206,7 +205,7 @@ This will start the server, connect via FastMCP client, and test all available t
 | **tongyi_search**  | WebSearch service based on DashScope      | `BAILIAN_MCP_API_KEY` | `query`: Recent news about Zijin Mining |
 | **bochaai_search** | BochaAI search service based on DashScope | `BAILIAN_MCP_API_KEY` | `query`: financial news                 |
 
----
+
 
 ## Server Configuration Parameters
 
@@ -232,7 +231,6 @@ For the full set of available options and defaults, refer to [default.yaml](./fi
 | `TAVILY_API_KEY`      | ⚠️ Optional | For Tavily web search                      |
 | `BAILIAN_MCP_API_KEY` | ⚠️ Optional | For external MCP services                  |
 
----
 
 ## HTTP RESTful API with Streaming Support
 
@@ -270,7 +268,7 @@ The response will be streamed in real-time, showing:
 
 **Note**: By default, this uses DashScope search, but you can replace it with other search backends (e.g., Tavily) by modifying the `stream_agent.yaml` configuration.
 
----
+
 
 ## 🤝 Contributing
 
@@ -291,13 +289,12 @@ pre-commit run --all-files
 
 3. Submit a pull request with your changes.
 
----
 
 ## ⚖️ License
 
 This project is licensed under the Apache License 2.0 - see the [LICENSE](./LICENSE) file for details.
 
----
+
 
 ## 📈 Star History
 
