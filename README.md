@@ -1,5 +1,5 @@
 <p align="center">
- <img src="docs/figure/logo.png" alt="Finance MCP Logo" width="50%">
+ <img src="docs/figure/logo.png" alt="Finance MCP Logo" width="30%">
 </p>
 
 <p align="center">
