@@ -1,4 +1,4 @@
-# <img src="docs/figure/logo.png" alt="Finance MCP Logo" width="5%"> Finance-MCP
+# <img src="docs/figure/logo.png" alt="Finance MCP Logo" width="5%" style="vertical-align: middle;"> Finance-MCP
 
 <p align="center">
   <strong>MCP-Server for Financial Research Agents</strong>
