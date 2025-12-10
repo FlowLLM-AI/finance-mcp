@@ -1,4 +1,4 @@
-# <img src="docs/figure/logo.png" alt="Finance MCP Logo" width="3%" style="vertical-align: middle;"> Finance-MCP
+# <img src="docs/figure/logo.png" alt="Finance MCP Logo" width="4%" style="vertical-align: middle;"> Finance-MCP
 
 <p>
   <a href="https://pypi.org/project/finance-mcp/"><img src="https://img.shields.io/badge/python-3.10+-blue" alt="Python Version"></a>
