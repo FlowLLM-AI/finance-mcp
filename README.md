@@ -1,5 +1,6 @@
-<p align="center">
- <img src="docs/figure/logo.png" alt="Finance MCP Logo" width="30%">
+<p align="center" style="display:flex; align-items:center; justify-content:center; gap:12px; text-decoration:none;">
+  <img src="docs/figure/logo.png" alt="Finance MCP Logo" width="5%">
+  <strong style="font-size:1.8rem;">Finance-MCP</strong>
 </p>
 
 <p align="center">
@@ -213,6 +214,32 @@ asyncio.run(main())
 
 ---
 
+## Server Configuration Parameters
+
+| Parameter                | Description                                                                                                                                                                                 | Example                                              |
+|--------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------|
+| `config`                 | Configuration files to load (comma-separated). Available: `default` (core flows), `ths` (TongHuaShun stock data), `stream_agent` (streaming agents), `external_mcp` (external MCP services) | `config=default,ths`                                 |
+| `mcp.transport`          | Transport mode: `stdio` (Claude Desktop), `sse` (web apps), `http` (RESTful), `streamable-http`                                                                                             | `mcp.transport=stdio`                                |
+| `mcp.host`               | Host address (for sse/http transports only)                                                                                                                                                 | `mcp.host=0.0.0.0`                                   |
+| `mcp.port`               | Port number (for sse/http transports only)                                                                                                                                                  | `mcp.port=8001`                                      |
+| `llm.default.model_name` | Default LLM model name (overrides config file)                                                                                                                                              | `llm.default.model_name=qwen3-30b-a3b-thinking-2507` |
+| `disabled_flows`         | JSON array of flow names to disable. **Tip**: Disable flows if you don't have the required API keys (e.g., `tavily_search` requires `TAVILY_API_KEY`)                                       | `disabled_flows='["react_agent"]'`                   |
+
+For the full set of available options and defaults, refer to [default.yaml](./finance_mcp/config/default.yaml).
+
+#### Environment Variables
+
+| Variable              | Required    | Description                                |
+|-----------------------|-------------|--------------------------------------------|
+| `FLOW_LLM_API_KEY`    | ✅ Yes       | API key for OpenAI-compatible LLM service  |
+| `FLOW_LLM_BASE_URL`   | ✅ Yes       | Base URL for OpenAI-compatible LLM service |
+| `DASHSCOPE_API_KEY`   | ⚠️ Optional | For DashScope search and entity extraction |
+| `TUSHARE_API_TOKEN`   | ⚠️ Optional | For historical data analysis               |
+| `TAVILY_API_KEY`      | ⚠️ Optional | For Tavily web search                      |
+| `BAILIAN_MCP_API_KEY` | ⚠️ Optional | For external MCP services                  |
+
+---
+
 ## HTTP RESTful API with Streaming Support
 
 Finance MCP also supports HTTP RESTful API mode with streaming capabilities. This allows you to access flows directly via HTTP endpoints, not just through MCP protocol.
@@ -248,32 +275,6 @@ The response will be streamed in real-time, showing:
 - Final comprehensive answer
 
 **Note**: By default, this uses DashScope search, but you can replace it with other search backends (e.g., Tavily) by modifying the `stream_agent.yaml` configuration.
-
----
-
-## Server Configuration Parameters
-
-| Parameter                | Description                                                                                                                                                                                 | Example                                              |
-|--------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------|
-| `config`                 | Configuration files to load (comma-separated). Available: `default` (core flows), `ths` (TongHuaShun stock data), `stream_agent` (streaming agents), `external_mcp` (external MCP services) | `config=default,ths`                                 |
-| `mcp.transport`          | Transport mode: `stdio` (Claude Desktop), `sse` (web apps), `http` (RESTful), `streamable-http`                                                                                             | `mcp.transport=stdio`                                |
-| `mcp.host`               | Host address (for sse/http transports only)                                                                                                                                                 | `mcp.host=0.0.0.0`                                   |
-| `mcp.port`               | Port number (for sse/http transports only)                                                                                                                                                  | `mcp.port=8001`                                      |
-| `llm.default.model_name` | Default LLM model name (overrides config file)                                                                                                                                              | `llm.default.model_name=qwen3-30b-a3b-thinking-2507` |
-| `disabled_flows`         | JSON array of flow names to disable. **Tip**: Disable flows if you don't have the required API keys (e.g., `tavily_search` requires `TAVILY_API_KEY`)                                       | `disabled_flows='["react_agent"]'`                   |
-
-For the full set of available options and defaults, refer to [default.yaml](./finance_mcp/config/default.yaml).
-
-#### Environment Variables
-
-| Variable              | Required    | Description                                |
-|-----------------------|-------------|--------------------------------------------|
-| `FLOW_LLM_API_KEY`    | ✅ Yes       | API key for OpenAI-compatible LLM service  |
-| `FLOW_LLM_BASE_URL`   | ✅ Yes       | Base URL for OpenAI-compatible LLM service |
-| `DASHSCOPE_API_KEY`   | ⚠️ Optional | For DashScope search and entity extraction |
-| `TUSHARE_API_TOKEN`   | ⚠️ Optional | For historical data analysis               |
-| `TAVILY_API_KEY`      | ⚠️ Optional | For Tavily web search                      |
-| `BAILIAN_MCP_API_KEY` | ⚠️ Optional | For external MCP services                  |
 
 ---
 
