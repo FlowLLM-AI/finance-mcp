@@ -70,6 +70,8 @@ llm:
   qwen3_30b_instruct:
     backend: openai_compatible
     model_name: qwen3-30b-a3b-instruct-2507
+    params:
+      temperature: 0.00001
 
   qwen3_30b_thinking:
     backend: openai_compatible
