@@ -122,3 +122,6 @@ def exec_code(code: str) -> str:
 
     except Exception as e:  # noqa: BLE001
         return str(e)
+
+    except BaseException as e:
+        return str(e)

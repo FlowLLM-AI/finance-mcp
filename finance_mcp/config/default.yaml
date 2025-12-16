@@ -13,12 +13,12 @@ http:
 flow:
   history_calculate:
     flow_content: HistoryCalculateOp()
-    enable_cache: true
+    enable_cache: false
     cache_expire_hours: 1
 
   crawl_url:
     flow_content: Crawl4aiLongTextOp() >> ExtractLongTextOp()
-    enable_cache: true
+    enable_cache: false
     cache_expire_hours: 1
     description: "Web content parsing tool: retrieves and formats web page content based on the provided URL."
     input_schema:
@@ -29,37 +29,37 @@ flow:
 
   extract_entities_code:
     flow_content: ExtractEntitiesCodeOp() << DashscopeSearchOp()
-    enable_cache: true
+    enable_cache: false
     cache_expire_hours: 1
 
   execute_code:
     flow_content: ExecuteCodeOp()
-    enable_cache: true
+    enable_cache: false
     cache_expire_hours: 1
 
   execute_shell:
     flow_content: ExecuteShellOp()
-    enable_cache: true
+    enable_cache: false
     cache_expire_hours: 1
 
   dashscope_search:
     flow_content: DashscopeSearchOp()
-    enable_cache: true
+    enable_cache: false
     cache_expire_hours: 1
 
   tavily_search:
     flow_content: TavilySearchOp()
-    enable_cache: true
+    enable_cache: false
     cache_expire_hours: 1
 
   mock_search:
     flow_content: MockSearchOp()
-    enable_cache: true
+    enable_cache: false
     cache_expire_hours: 1
 
   react_agent:
     flow_content: |
-      ops = [HistoryCalculateOp(), ExtractEntitiesCodeOp() << DashscopeSearchOp(), DashscopeSearchOp()]
+      ops = [HistoryCalculateOp(llm="qwen3_30b_instruct"), ExtractEntitiesCodeOp() << DashscopeSearchOp(), DashscopeSearchOp()]
       ReactAgentOp(add_think_tool=True) << ops
 
 llm:
