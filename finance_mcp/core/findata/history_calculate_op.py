@@ -77,7 +77,7 @@ class HistoryCalculateOp(BaseAsyncToolOp):
         import tushare as ts
 
         # Initialize the Tushare pro API using the token from environment.
-        ts.pro_api(token=os.getenv("TUSHARE_API_TOKEN", ""))
+        ts.set_token(token=os.getenv("TUSHARE_API_TOKEN", ""))
 
         code_prompt: str = self.prompt_format(
             prompt_name="code_prompt",
