@@ -57,7 +57,7 @@ where = ["."]
 include = ["finance_mcp*"]
 
 [tool.setuptools.package-data]
-flowllm = [
+finance_mcp = [
     "**/*.yaml",
 ]
 
