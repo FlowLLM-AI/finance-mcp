@@ -3,6 +3,9 @@ import json
 import os
 import random
 import uuid
+
+# 禁用代理，避免 httpx 读取系统代理配置导致连接失败
+os.environ.setdefault("NO_PROXY", "*")
 import pandas as pd
 from datetime import datetime
 from fastmcp.client.client import CallToolResult
@@ -11,7 +14,7 @@ from loguru import logger
 from finance_mcp.core.utils.fastmcp_client import FastMcpClient
 
 # --- 配置区 ---
-HOST = "localhost"
+HOST = "127.0.0.1"  # 使用 IPv4 地址，避免 IPv6 连接问题
 PORT = 8050
 CSV_PATH = "tushare_stock_basic_20251226104714.csv"
 BASE_CACHE_DIR = "tool_cache"
@@ -26,11 +29,11 @@ NORMAL_WAIT_SECONDS = 2          # 正常请求间隔秒数
 # 针对每个页面结构设计的全量提取 Query
 TOOLS_CONFIG = [
     # ("crawl_ths_company", "提取公司的完整资料：1.基本信息（行业、产品、主营、办公地址）；2.高管介绍（所有高管的姓名、职务、薪资、详细个人简历）；3.发行相关（上市日期、首日表现、募资额）；4.所有参控股公司的名称、持股比例、业务、盈亏情况。"),
-    ("crawl_ths_holder", "提取股东研究全量数据：1.历年股东人数及户均持股数；2.前十大股东及流通股东名单（含持股数、性质、变动情况）；3.实际控制人详情及控股层级关系描述；4.股权质押、冻结的详细明细表。"),
-    ("crawl_ths_operate", "提取经营分析数据：1.主营构成分析表（按行业、产品、区域划分的营业收入、利润、毛利率及同比变化）；2.经营评述（公司对业务、核心竞争力的详细自我评估）。"),
-    ("crawl_ths_equity", "提取股本结构信息：1.历次股本变动原因、日期及变动后的总股本；2.限售股份解禁的时间表、解禁数量及占总股本比例。"),
-    ("crawl_ths_capital", "提取资本运作详情：1.资产重组、收购、合并的详细历史记录；2.对外投资明细及进展情况。"),
-    ("crawl_ths_worth", "提取盈利预测信息：1.各机构最新评级汇总（买入/增持次数）；2.未来三年的营收预测、净利润预测及EPS预测均值。"),
+    # ("crawl_ths_holder", "提取股东研究全量数据：1.历年股东人数及户均持股数；2.前十大股东及流通股东名单（含持股数、性质、变动情况）；3.实际控制人详情及控股层级关系描述；4.股权质押、冻结的详细明细表。"),
+    # ("crawl_ths_operate", "提取经营分析数据：1.主营构成分析表（按行业、产品、区域划分的营业收入、利润、毛利率及同比变化）；2.经营评述（公司对业务、核心竞争力的详细自我评估）。"),
+    # ("crawl_ths_equity", "提取股本结构信息：1.历次股本变动原因、日期及变动后的总股本；2.限售股份解禁的时间表、解禁数量及占总股本比例。"),
+    # ("crawl_ths_capital", "提取资本运作详情：1.资产重组、收购、合并的详细历史记录；2.对外投资明细及进展情况。"),
+    # ("crawl_ths_worth", "提取盈利预测信息：1.各机构最新评级汇总（买入/增持次数）；2.未来三年的营收预测、净利润预测及EPS预测均值。"),
     ("crawl_ths_news", "提取最新新闻公告：1.公司最新重要公告标题及日期；2.媒体报道的新闻摘要及舆情评价。"),
     ("crawl_ths_concept", "提取所有概念题材：列出公司所属的所有概念板块，并详细提取每个概念对应的具体入选理由和业务关联性。"),
     ("crawl_ths_position", "提取主力持仓情况：1.各类机构（基金、保险、QFII等）持仓总数及占比；2.前十大具体机构持仓名单及变动。"),
