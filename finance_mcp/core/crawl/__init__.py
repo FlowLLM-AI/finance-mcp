@@ -13,10 +13,12 @@ modules can perform clear and explicit imports.
 """
 
 from .crawl4ai_op import Crawl4aiOp, Crawl4aiLongTextOp
+from .read_local_ths_op import ReadLocalThsOp
 from .ths_url_op import ThsUrlOp
 
 __all__ = [
     "Crawl4aiOp",
     "Crawl4aiLongTextOp",
     "ThsUrlOp",
+    "ReadLocalThsOp",
 ]
