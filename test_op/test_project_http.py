@@ -16,7 +16,9 @@ from finance_mcp.core.utils.service_runner import FinanceMcpServiceRunner
 # Service configuration
 service_args = [
     "finance-mcp",
-    "config=default,stream_agent",
+    "backend=http",
+    # "config=default,stream_agent",
+    "config=default,ths_local",
     "llm.default.model_name=qwen3-30b-a3b-thinking-2507",
 ]
 
@@ -113,7 +115,11 @@ def main() -> None:
         for endpoint, data in [
             # ("conduct_research", {"research_topic": "茅台怎么样？"}),
             # ("dashscope_deep_research", {"query": "茅台怎么样？"}),
-            ("langchain_deep_research", {"query": "茅台怎么样？"}),
+            # ("langchain_deep_research", {"query": "茅台怎么样？"}),
+            ("crawl_ths_company", {"code": "000001"}),
+            ("crawl_ths_company", {"code": "000002"}),
+            ("crawl_ths_company", {"code": "000004"}),
+            ("crawl_ths_holder", {"code": "000004"}),
         ]:
             test_http_service(
                 endpoint=endpoint,

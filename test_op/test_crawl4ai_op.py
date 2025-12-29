@@ -6,6 +6,7 @@ verification of the crawling pipeline.
 """
 
 import asyncio
+import time
 
 from finance_mcp import FinanceMcpApp
 from finance_mcp.core.crawl import Crawl4aiOp
@@ -13,13 +14,15 @@ from finance_mcp.core.crawl import Crawl4aiOp
 
 async def main() -> None:
     """Execute the crawl operation for a sample stock information page."""
-
+    t1 = time.time()
     async with FinanceMcpApp():
         # Instantiate and run the crawling operator against a THS stock page.
         op = Crawl4aiOp()
-        await op.async_call(url="https://stockpage.10jqka.com.cn/601899/")
+        # await op.async_call(url="https://stockpage.10jqka.com.cn/601899/")
+        await op.async_call(url="https://basic.10jqka.com.cn/601899/equity.html#stockpage")
         print(op.output)
 
+    print(f"Total time: {time.time() - t1:.2f}s")
 
 if __name__ == "__main__":
     asyncio.run(main())

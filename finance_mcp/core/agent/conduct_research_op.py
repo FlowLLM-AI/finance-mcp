@@ -74,7 +74,7 @@ class ConductResearchOp(BaseAsyncToolOp):
         )
 
     async def async_execute(self):
-        """Run the multi-step research loop and produce a final answer.
+        """Run the multistep research loop and produce a final answer.
 
         The method performs the following high-level steps:
 
