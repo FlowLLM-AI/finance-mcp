@@ -55,17 +55,17 @@ INVALID_RESULTS = [
 # 针对每个页面结构设计的全量提取 Query
 TOOLS_CONFIG = [
     # ("crawl_ths_company", "提取公司的完整资料：1.基本信息（行业、产品、主营、办公地址）；2.高管介绍（所有高管的姓名、职务、薪资、详细个人简历）；3.发行相关（上市日期、首日表现、募资额）；4.所有参控股公司的名称、持股比例、业务、盈亏情况。"),
-    # ("crawl_ths_holder", "提取股东研究全量数据：1.历年股东人数及户均持股数；2.前十大股东及流通股东名单（含持股数、性质、变动情况）；3.实际控制人详情及控股层级关系描述；4.股权质押、冻结的详细明细表。"),
-    # ("crawl_ths_operate", "提取经营分析数据：1.主营构成分析表（按行业、产品、区域划分的营业收入、利润、毛利率及同比变化）；2.经营评述（公司对业务、核心竞争力的详细自我评估）。"),
+    ("crawl_ths_holder", "提取股东研究全量数据：1.历年股东人数及户均持股数；2.前十大股东及流通股东名单（含持股数、性质、变动情况）；3.实际控制人详情及控股层级关系描述；4.股权质押、冻结的详细明细表。"),
+    ("crawl_ths_operate", "提取经营分析数据：1.主营构成分析表（按行业、产品、区域划分的营业收入、利润、毛利率及同比变化）；2.经营评述（公司对业务、核心竞争力的详细自我评估）。"),
     ("crawl_ths_equity", "提取股本结构信息：1.历次股本变动原因、日期及变动后的总股本；2.限售股份解禁的时间表、解禁数量及占总股本比例。"),
     ("crawl_ths_capital", "提取资本运作详情：1.资产重组、收购、合并的详细历史记录；2.对外投资明细及进展情况。"),
     ("crawl_ths_worth", "提取盈利预测信息：1.各机构最新评级汇总（买入/增持次数）；2.未来三年的营收预测、净利润预测及EPS预测均值。"),
     ("crawl_ths_news", "提取最新新闻公告：1.公司最新重要公告标题及日期；2.媒体报道的新闻摘要及舆情评价。"),
-    # ("crawl_ths_concept", "提取所有概念题材：列出公司所属的所有概念板块，并详细提取每个概念对应的具体入选理由和业务关联性。"),
+    ("crawl_ths_concept", "提取所有概念题材：列出公司所属的所有概念板块，并详细提取每个概念对应的具体入选理由和业务关联性。"),
     ("crawl_ths_position", "提取主力持仓情况：1.各类机构（基金、保险、QFII等）持仓总数及占比；2.前十大具体机构持仓名单及变动。"),
     ("crawl_ths_finance", "提取财务分析详情：1.主要财务指标（盈利、成长、偿债等）；2.资产负债表、利润表、现金流量表的核心科目及审计意见。"),
     ("crawl_ths_bonus", "提取分红融资记录：1.历年现金分红、送转股份方案及实施日期；2.历次增发、配股等融资详情。"),
-    # ("crawl_ths_event", "提取公司大事记录：1.股东及高管持股变动明细；2.对外担保记录、违规处理、机构调研及投资者互动记录。"),
+    ("crawl_ths_event", "提取公司大事记录：1.股东及高管持股变动明细；2.对外担保记录、违规处理、机构调研及投资者互动记录。"),
     # ("crawl_ths_field", "提取行业对比数据：1.公司在所属行业内的规模、成长、盈利各项排名；2.与行业均值及同类竞品的关键财务指标对比。")
 ]
 
@@ -265,6 +265,13 @@ async def process_single_stock(
             except Exception as e:
                 import traceback
                 elapsed_time = (datetime.now() - start_time).total_seconds()
+                error_str = str(e)
+                
+                # 检查是否是“不当内容”错误，这种情况不需要重试
+                if "inappropriate content" in error_str:
+                    logger.warning(f"⚠ {code}: 返回不当内容错误，跳过不重试")
+                    return
+                
                 if attempt < MAX_RETRIES:
                     wait_seconds = random.randint(MIN_WAIT_ON_EMPTY, MAX_WAIT_ON_EMPTY)
                     logger.warning(f"✗ 失败 {code}: {e}, 等待 {wait_seconds} 秒后重试 ({attempt}/{MAX_RETRIES})...")
@@ -290,13 +297,46 @@ async def run_crawl_task():
     # 信号量控制并发数
     semaphore = asyncio.Semaphore(MAX_CONCURRENCY)
 
+    # 【第二步】汇总统计各工具待爬取数量
+    logger.info(f"\n{'='*60}")
+    logger.info("【第二步】统计各工具待爬取数量...")
+    logger.info(f"{'='*60}")
+    
+    total_tasks = 0
+    tool_stats = []
+    for tool_name, deep_query in TOOLS_CONFIG:
+        progress_tracker = ProgressTracker(tool_name)
+        remaining_codes = progress_tracker.get_remaining_codes(stock_codes)
+        total_remaining = len(remaining_codes)
+        completed_count = len(stock_codes) - total_remaining
+        total_tasks += total_remaining
+        tool_stats.append((tool_name, completed_count, total_remaining))
+        # 只列出还需要爬取的工具
+        if total_remaining > 0:
+            logger.info(
+                f"  {tool_name}: 已完成 {completed_count}, 待爬取 {total_remaining}"
+            )
+    
+    logger.info(f"{'='*60}")
+    logger.info(f"汇总: 共 {len(TOOLS_CONFIG)} 个工具, 总计待爬取 {total_tasks} 条记录")
+    logger.info(f"{'='*60}\n")
+    
+    if total_tasks == 0:
+        logger.info("所有工具已完成爬取，无需继续")
+        return
+    
+    # 【第三步】开始爬取任务
+    logger.info(f"\n{'='*60}")
+    logger.info("【第三步】开始爬取任务...")
+    logger.info(f"{'='*60}\n")
+    
     async with FastMcpClient(name="full-info-crawler", config=mcp_config) as client:
         # 外层循环：遍历所有工具
         for tool_name, deep_query in TOOLS_CONFIG:
-            logger.info(f"\n{'='*80}")
+            logger.info(f"\n{'-'*60}")
             logger.info(f"开始爬取工具: {tool_name}")
             logger.info(f"查询内容: {deep_query}")
-            logger.info(f"{'='*80}\n")
+            logger.info(f"{'-'*60}")
             
             saver = BatchResultSaver(tool_name)
             progress_tracker = ProgressTracker(tool_name)
