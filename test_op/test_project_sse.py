@@ -13,6 +13,7 @@ It is intended as an integration/diagnostic script rather than a unit test.
 
 import asyncio
 import json
+import time
 
 from fastmcp.client.client import CallToolResult
 from loguru import logger
@@ -23,7 +24,7 @@ from finance_mcp.core.utils.service_runner import FinanceMcpServiceRunner
 # Service configuration
 service_args = [
     "finance-mcp",
-    "config=default,ths",
+    "config=default,ths_local",
     "mcp.transport=sse",
     "llm.default.model_name=qwen3-30b-a3b-thinking-2507",
 ]
@@ -56,8 +57,8 @@ async def test_mcp_service() -> None:
             print(json.dumps(tool_info, ensure_ascii=False))
 
         for tool_name, test_arguments in [
-            ("history_calculate", {"code": "000001", "query": "最近5个、10个交易日的涨幅是多少？"}),
-            ("crawl_url", {"url": "https://stockpage.10jqka.com.cn/601899/", "query": "紫金矿业信息"}),
+            # ("history_calculate", {"code": "000001", "query": "最近5个、10个交易日的涨幅是多少？"}),
+            # ("crawl_url", {"url": "https://stockpage.10jqka.com.cn/601899/", "query": "紫金矿业信息"}),
             # ("extract_entities_code", {"query": "查询紫金矿业和贵州茅台的股票代码"}),
             # ("execute_code", {"code": "print('Hello World')\nresult = 1 + 1\nprint(f'1 + 1 = {result}')"}),
             # ("execute_shell", {"command": "echo 'Hello from shell' && date"}),
@@ -65,22 +66,22 @@ async def test_mcp_service() -> None:
             # ("tavily_search", {"query": "Python programming best practices"}),
             # ("mock_search", {"query": "最新的AI技术发展"}),
             # ("react_agent", {"query": "分析一下宁德时代"}),
-            # ("crawl_ths_company", {"code": "300750", "query": "公司基本信息"}),
-            # ("crawl_ths_holder", {"code": "300750", "query": "股东情况"}),
-            # ("crawl_ths_operate", {"code": "300750", "query": "经营情况"}),
-            # ("crawl_ths_equity", {"code": "300750", "query": "股本结构"}),
-            # ("crawl_ths_capital", {"code": "300750", "query": "资本运作"}),
-            # ("crawl_ths_worth", {"code": "300750", "query": "盈利预测"}),
-            # ("crawl_ths_news", {"code": "300750", "query": "最新新闻"}),
-            # ("crawl_ths_concept", {"code": "300750", "query": "概念题材"}),
-            # ("crawl_ths_position", {"code": "300750", "query": "主力持仓"}),
-            # ("crawl_ths_finance", {"code": "300750", "query": "财务分析"}),
-            # ("crawl_ths_bonus", {"code": "300750", "query": "分红融资"}),
-            # ("crawl_ths_event", {"code": "300750", "query": "公司大事"}),
-            # ("crawl_ths_field", {"code": "300750", "query": "行业对比"}),
+            ("crawl_ths_company", {"code": "300750"}),
+            ("crawl_ths_holder", {"code": "300750"}),
+            ("crawl_ths_operate", {"code": "300750"}),
+            ("crawl_ths_equity", {"code": "300750"}),
+            ("crawl_ths_capital", {"code": "300750"}),
+            ("crawl_ths_worth", {"code": "300750"}),
+            ("crawl_ths_news", {"code": "300750"}),
+            ("crawl_ths_concept", {"code": "300750"}),
+            ("crawl_ths_position", {"code": "300750"}),
+            ("crawl_ths_finance", {"code": "300750"}),
+            ("crawl_ths_bonus", {"code": "300750"}),
+            ("crawl_ths_event", {"code": "300750"}),
+            ("crawl_ths_field", {"code": "300750"}),
         ]:
             result: CallToolResult = await client.call_tool(tool_name, test_arguments)
-            result_content = result.content[0].text
+            result_content = result.content[0].text if result.content else "(empty)"
             success = not result.is_error
             print(f"Tool call result: {tool_name}, success: {success}, content: {result_content}")
             assert success
@@ -95,6 +96,8 @@ def main() -> None:
         port=port,
     ) as service:
         logger.info(f"Service is running on port {service.port}")
+        logger.info("Waiting a moment for service to fully initialize...")
+        time.sleep(2)  # Give service a moment to fully initialize
 
         asyncio.run(test_mcp_service())
 
