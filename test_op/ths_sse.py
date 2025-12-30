@@ -41,7 +41,8 @@ BASE_CACHE_DIR = "tool_cache"
 PROGRESS_DIR = os.path.join(BASE_CACHE_DIR, "progress")
 MAX_FILE_SIZE = 50 * 1024 * 1024  # 50MB
 SAVE_BATCH_SIZE = 1               # 每1个保存一次
-MAX_CONCURRENCY = 7              # 最大并发数（信号量控制）
+MAX_CONCURRENCY = 5              # 最大并发数（信号量控制）
+PROGRESS_REPORT_INTERVAL = 10    # 每处理N条记录显示一次进度汇总
 MIN_WAIT_ON_EMPTY = 60            # 无输出时最小等待秒数
 MAX_WAIT_ON_EMPTY = 120           # 无输出时最大等待秒数
 NORMAL_WAIT_SECONDS = 3           # 正常请求间隔秒数
@@ -55,16 +56,16 @@ INVALID_RESULTS = [
 # 针对每个页面结构设计的全量提取 Query
 TOOLS_CONFIG = [
     # ("crawl_ths_company", "提取公司的完整资料：1.基本信息（行业、产品、主营、办公地址）；2.高管介绍（所有高管的姓名、职务、薪资、详细个人简历）；3.发行相关（上市日期、首日表现、募资额）；4.所有参控股公司的名称、持股比例、业务、盈亏情况。"),
-    ("crawl_ths_holder", "提取股东研究全量数据：1.历年股东人数及户均持股数；2.前十大股东及流通股东名单（含持股数、性质、变动情况）；3.实际控制人详情及控股层级关系描述；4.股权质押、冻结的详细明细表。"),
-    ("crawl_ths_operate", "提取经营分析数据：1.主营构成分析表（按行业、产品、区域划分的营业收入、利润、毛利率及同比变化）；2.经营评述（公司对业务、核心竞争力的详细自我评估）。"),
-    ("crawl_ths_equity", "提取股本结构信息：1.历次股本变动原因、日期及变动后的总股本；2.限售股份解禁的时间表、解禁数量及占总股本比例。"),
-    ("crawl_ths_capital", "提取资本运作详情：1.资产重组、收购、合并的详细历史记录；2.对外投资明细及进展情况。"),
-    ("crawl_ths_worth", "提取盈利预测信息：1.各机构最新评级汇总（买入/增持次数）；2.未来三年的营收预测、净利润预测及EPS预测均值。"),
-    ("crawl_ths_news", "提取最新新闻公告：1.公司最新重要公告标题及日期；2.媒体报道的新闻摘要及舆情评价。"),
-    ("crawl_ths_concept", "提取所有概念题材：列出公司所属的所有概念板块，并详细提取每个概念对应的具体入选理由和业务关联性。"),
-    ("crawl_ths_position", "提取主力持仓情况：1.各类机构（基金、保险、QFII等）持仓总数及占比；2.前十大具体机构持仓名单及变动。"),
-    # ("crawl_ths_finance", "提取财务分析详情：1.主要财务指标（盈利、成长、偿债等）；2.资产负债表、利润表、现金流量表的核心科目及审计意见。"),
-    ("crawl_ths_bonus", "提取分红融资记录：1.历年现金分红、送转股份方案及实施日期；2.历次增发、配股等融资详情。"),
+    # ("crawl_ths_holder", "提取股东研究全量数据：1.历年股东人数及户均持股数；2.前十大股东及流通股东名单（含持股数、性质、变动情况）；3.实际控制人详情及控股层级关系描述；4.股权质押、冻结的详细明细表。"),
+    # ("crawl_ths_operate", "提取经营分析数据：1.主营构成分析表（按行业、产品、区域划分的营业收入、利润、毛利率及同比变化）；2.经营评述（公司对业务、核心竞争力的详细自我评估）。"),
+    # ("crawl_ths_equity", "提取股本结构信息：1.历次股本变动原因、日期及变动后的总股本；2.限售股份解禁的时间表、解禁数量及占总股本比例。"),
+    # ("crawl_ths_capital", "提取资本运作详情：1.资产重组、收购、合并的详细历史记录；2.对外投资明细及进展情况。"),
+    # ("crawl_ths_worth", "提取盈利预测信息：1.各机构最新评级汇总（买入/增持次数）；2.未来三年的营收预测、净利润预测及EPS预测均值。"),
+    # ("crawl_ths_news", "提取最新新闻公告：1.公司最新重要公告标题及日期；2.媒体报道的新闻摘要及舆情评价。"),
+    # ("crawl_ths_concept", "提取所有概念题材：列出公司所属的所有概念板块，并详细提取每个概念对应的具体入选理由和业务关联性。"),
+    # ("crawl_ths_position", "提取主力持仓情况：1.各类机构（基金、保险、QFII等）持仓总数及占比；2.前十大具体机构持仓名单及变动。"),
+    ("crawl_ths_finance", "提取财务分析详情：1.主要财务指标（盈利、成长、偿债等）；2.资产负债表、利润表、现金流量表的核心科目及审计意见。"),
+    # ("crawl_ths_bonus", "提取分红融资记录：1.历年现金分红、送转股份方案及实施日期；2.历次增发、配股等融资详情。"),
     ("crawl_ths_event", "提取公司大事记录：1.股东及高管持股变动明细；2.对外担保记录、违规处理、机构调研及投资者互动记录。"),
     # ("crawl_ths_field", "提取行业对比数据：1.公司在所属行业内的规模、成长、盈利各项排名；2.与行业均值及同类竞品的关键财务指标对比。")
 ]
@@ -191,6 +192,20 @@ class ProgressTracker:
 MAX_RETRIES = 1  # 最大重试次数
 
 
+# 全局计数器，用于追踪处理进度
+class GlobalProgressCounter:
+    def __init__(self):
+        self.processed_count = 0
+        self.lock = asyncio.Lock()
+    
+    async def increment(self):
+        async with self.lock:
+            self.processed_count += 1
+            return self.processed_count
+
+global_counter = GlobalProgressCounter()
+
+
 async def process_single_stock(
     client: FastMcpClient,
     tool_name: str,
@@ -200,7 +215,8 @@ async def process_single_stock(
     progress_tracker: ProgressTracker,
     semaphore: asyncio.Semaphore,
     index: int,
-    total: int
+    total: int,
+    total_all_tools: int = 0
 ):
     """处理单个股票的异步任务"""
     async with semaphore:  # 信号量控制并发数
@@ -247,8 +263,27 @@ async def process_single_stock(
                         # 定期保存进度
                         if index % SAVE_BATCH_SIZE == 0:
                             progress_tracker.save_progress()
-                        # 正常等待间隔
-                        logger.info(f"✓ 成功处理 {code}, 耗时 {elapsed_time:.2f}秒, 等待 {NORMAL_WAIT_SECONDS} 秒...")
+                        
+                        # 更新全局计数并显示剩余数量
+                        global_processed = await global_counter.increment()
+                        remaining_this_tool = total - index
+                        remaining_all = total_all_tools - global_processed
+                        
+                        # 正常等待间隔，显示剩余数量
+                        logger.info(
+                            f"✓ 成功处理 {code}, 耗时 {elapsed_time:.2f}秒 | "
+                            f"当前工具剩余: {remaining_this_tool}/{total} | "
+                            f"总剩余: {remaining_all}"
+                        )
+                        
+                        # 每隔一定数量显示详细进度汇总
+                        if global_processed % PROGRESS_REPORT_INTERVAL == 0:
+                            logger.info(
+                                f"\n{'─'*40}\n"
+                                f"📊 进度汇总: 已处理 {global_processed} 条, 总剩余 {remaining_all} 条\n"
+                                f"{'─'*40}"
+                            )
+                        
                         await asyncio.sleep(NORMAL_WAIT_SECONDS)
                         return  # 成功，退出重试循环
                 else:
@@ -324,63 +359,69 @@ async def run_crawl_task():
     if total_tasks == 0:
         logger.info("所有工具已完成爬取，无需继续")
         return
+    return
     
-    # 【第三步】开始爬取任务
-    logger.info(f"\n{'='*60}")
-    logger.info("【第三步】开始爬取任务...")
-    logger.info(f"{'='*60}\n")
+#     # 重置全局计数器
+#     global global_counter
+#     global_counter = GlobalProgressCounter()
     
-    async with FastMcpClient(name="full-info-crawler", config=mcp_config) as client:
-        # 外层循环：遍历所有工具
-        for tool_name, deep_query in TOOLS_CONFIG:
-            logger.info(f"\n{'-'*60}")
-            logger.info(f"开始爬取工具: {tool_name}")
-            logger.info(f"查询内容: {deep_query}")
-            logger.info(f"{'-'*60}")
+#     # 【第三步】开始爬取任务
+#     logger.info(f"\n{'='*60}")
+#     logger.info("【第三步】开始爬取任务...")
+#     logger.info(f"{'='*60}\n")
+    
+#     async with FastMcpClient(name="full-info-crawler", config=mcp_config) as client:
+#         # 外层循环：遍历所有工具
+#         for tool_name, deep_query in TOOLS_CONFIG:
+#             logger.info(f"\n{'-'*60}")
+#             logger.info(f"开始爬取工具: {tool_name}")
+#             logger.info(f"查询内容: {deep_query}")
+#             logger.info(f"{'-'*60}")
             
-            saver = BatchResultSaver(tool_name)
-            progress_tracker = ProgressTracker(tool_name)
+#             saver = BatchResultSaver(tool_name)
+#             progress_tracker = ProgressTracker(tool_name)
             
-            # 获取剩余需要处理的股票代码
-            remaining_codes = progress_tracker.get_remaining_codes(stock_codes)
-            total_remaining = len(remaining_codes)
-            completed_count = len(stock_codes) - total_remaining
+#             # 获取剩余需要处理的股票代码
+#             remaining_codes = progress_tracker.get_remaining_codes(stock_codes)
+#             total_remaining = len(remaining_codes)
+#             completed_count = len(stock_codes) - total_remaining
             
-            logger.info(
-                f"工具 {tool_name}: 总计 {len(stock_codes)} 个股票, "
-                f"已完成 {completed_count} 个, 剩余 {total_remaining} 个"
-            )
+#             logger.info(
+#                 f"工具 {tool_name}: 总计 {len(stock_codes)} 个股票, "
+#                 f"已完成 {completed_count} 个, 剩余 {total_remaining} 个"
+#             )
             
-            if total_remaining == 0:
-                logger.info(f"工具 {tool_name} 所有股票已处理完成，跳过")
-                continue
+#             if total_remaining == 0:
+#                 logger.info(f"工具 {tool_name} 所有股票已处理完成，跳过")
+#                 continue
             
-            # 创建所有并发任务
-            tasks = []
-            for i, code in enumerate(remaining_codes, start=1):
-                task = process_single_stock(
-                    client=client,
-                    tool_name=tool_name,
-                    code=code,
-                    deep_query=deep_query,
-                    saver=saver,
-                    progress_tracker=progress_tracker,
-                    semaphore=semaphore,
-                    index=i,
-                    total=total_remaining
-                )
-                tasks.append(task)
+#             # 创建所有并发任务
+#             tasks = []
+#             for i, code in enumerate(remaining_codes, start=1):
+#                 task = process_single_stock(
+#                     client=client,
+#                     tool_name=tool_name,
+#                     code=code,
+#                     deep_query=deep_query,
+#                     saver=saver,
+#                     progress_tracker=progress_tracker,
+#                     semaphore=semaphore,
+#                     index=i,
+#                     total=total_remaining,
+#                     total_all_tools=total_tasks
+#                 )
+#                 tasks.append(task)
             
-            # 并发执行所有任务，信号量控制最多 MAX_CONCURRENCY 个同时运行
-            logger.info(f"启动 {len(tasks)} 个并发任务，最大并发数: {MAX_CONCURRENCY}")
-            await asyncio.gather(*tasks)
+#             # 并发执行所有任务，信号量控制最多 MAX_CONCURRENCY 个同时运行
+#             logger.info(f"启动 {len(tasks)} 个并发任务，最大并发数: {MAX_CONCURRENCY}")
+#             await asyncio.gather(*tasks)
             
-            # 保存最后的进度
-            progress_tracker.save_progress()
-            saver.flush()
-            logger.info(f"\n{'='*80}")
-            logger.info(f"✓ 工具 {tool_name} 完成!")
-            logger.info(f"{'='*80}\n")
+#             # 保存最后的进度
+#             progress_tracker.save_progress()
+#             saver.flush()
+#             logger.info(f"\n{'='*80}")
+#             logger.info(f"✓ 工具 {tool_name} 完成!")
+#             logger.info(f"{'='*80}\n")
 
 
 def main():
