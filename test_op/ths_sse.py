@@ -359,69 +359,69 @@ async def run_crawl_task():
     if total_tasks == 0:
         logger.info("所有工具已完成爬取，无需继续")
         return
-    return
+    # return
     
-#     # 重置全局计数器
-#     global global_counter
-#     global_counter = GlobalProgressCounter()
+    # 重置全局计数器
+    global global_counter
+    global_counter = GlobalProgressCounter()
     
-#     # 【第三步】开始爬取任务
-#     logger.info(f"\n{'='*60}")
-#     logger.info("【第三步】开始爬取任务...")
-#     logger.info(f"{'='*60}\n")
+    # 【第三步】开始爬取任务
+    logger.info(f"\n{'='*60}")
+    logger.info("【第三步】开始爬取任务...")
+    logger.info(f"{'='*60}\n")
     
-#     async with FastMcpClient(name="full-info-crawler", config=mcp_config) as client:
-#         # 外层循环：遍历所有工具
-#         for tool_name, deep_query in TOOLS_CONFIG:
-#             logger.info(f"\n{'-'*60}")
-#             logger.info(f"开始爬取工具: {tool_name}")
-#             logger.info(f"查询内容: {deep_query}")
-#             logger.info(f"{'-'*60}")
+    async with FastMcpClient(name="full-info-crawler", config=mcp_config) as client:
+        # 外层循环：遍历所有工具
+        for tool_name, deep_query in TOOLS_CONFIG:
+            logger.info(f"\n{'-'*60}")
+            logger.info(f"开始爬取工具: {tool_name}")
+            logger.info(f"查询内容: {deep_query}")
+            logger.info(f"{'-'*60}")
             
-#             saver = BatchResultSaver(tool_name)
-#             progress_tracker = ProgressTracker(tool_name)
+            saver = BatchResultSaver(tool_name)
+            progress_tracker = ProgressTracker(tool_name)
             
-#             # 获取剩余需要处理的股票代码
-#             remaining_codes = progress_tracker.get_remaining_codes(stock_codes)
-#             total_remaining = len(remaining_codes)
-#             completed_count = len(stock_codes) - total_remaining
+            # 获取剩余需要处理的股票代码
+            remaining_codes = progress_tracker.get_remaining_codes(stock_codes)
+            total_remaining = len(remaining_codes)
+            completed_count = len(stock_codes) - total_remaining
             
-#             logger.info(
-#                 f"工具 {tool_name}: 总计 {len(stock_codes)} 个股票, "
-#                 f"已完成 {completed_count} 个, 剩余 {total_remaining} 个"
-#             )
+            logger.info(
+                f"工具 {tool_name}: 总计 {len(stock_codes)} 个股票, "
+                f"已完成 {completed_count} 个, 剩余 {total_remaining} 个"
+            )
             
-#             if total_remaining == 0:
-#                 logger.info(f"工具 {tool_name} 所有股票已处理完成，跳过")
-#                 continue
+            if total_remaining == 0:
+                logger.info(f"工具 {tool_name} 所有股票已处理完成，跳过")
+                continue
             
-#             # 创建所有并发任务
-#             tasks = []
-#             for i, code in enumerate(remaining_codes, start=1):
-#                 task = process_single_stock(
-#                     client=client,
-#                     tool_name=tool_name,
-#                     code=code,
-#                     deep_query=deep_query,
-#                     saver=saver,
-#                     progress_tracker=progress_tracker,
-#                     semaphore=semaphore,
-#                     index=i,
-#                     total=total_remaining,
-#                     total_all_tools=total_tasks
-#                 )
-#                 tasks.append(task)
+            # 创建所有并发任务
+            tasks = []
+            for i, code in enumerate(remaining_codes, start=1):
+                task = process_single_stock(
+                    client=client,
+                    tool_name=tool_name,
+                    code=code,
+                    deep_query=deep_query,
+                    saver=saver,
+                    progress_tracker=progress_tracker,
+                    semaphore=semaphore,
+                    index=i,
+                    total=total_remaining,
+                    total_all_tools=total_tasks
+                )
+                tasks.append(task)
             
-#             # 并发执行所有任务，信号量控制最多 MAX_CONCURRENCY 个同时运行
-#             logger.info(f"启动 {len(tasks)} 个并发任务，最大并发数: {MAX_CONCURRENCY}")
-#             await asyncio.gather(*tasks)
+            # 并发执行所有任务，信号量控制最多 MAX_CONCURRENCY 个同时运行
+            logger.info(f"启动 {len(tasks)} 个并发任务，最大并发数: {MAX_CONCURRENCY}")
+            await asyncio.gather(*tasks)
             
-#             # 保存最后的进度
-#             progress_tracker.save_progress()
-#             saver.flush()
-#             logger.info(f"\n{'='*80}")
-#             logger.info(f"✓ 工具 {tool_name} 完成!")
-#             logger.info(f"{'='*80}\n")
+            # 保存最后的进度
+            progress_tracker.save_progress()
+            saver.flush()
+            logger.info(f"\n{'='*80}")
+            logger.info(f"✓ 工具 {tool_name} 完成!")
+            logger.info(f"{'='*80}\n")
 
 
 def main():
