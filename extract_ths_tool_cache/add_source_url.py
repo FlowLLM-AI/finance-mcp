@@ -100,7 +100,7 @@ def add_source_url_to_records(tool_cache_dir: str):
 
 def main():
     # 设置tool_cache目录路径
-    tool_cache_dir = "/mnt/data_cpfs/taoshuchang.tsc/deepresearch/finance-mcp/tool_cache"
+    tool_cache_dir = "tool_cache"
     
     print("开始处理tool_cache目录下的JSON文件...")
     print(f"目标目录: {tool_cache_dir}\n")

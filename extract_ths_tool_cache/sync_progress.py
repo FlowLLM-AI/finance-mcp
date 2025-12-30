@@ -229,7 +229,7 @@ def sync_progress_with_cache():
     print("\n" + "=" * 80)
     print("爬取进度统计（总股票数: {})".format(total_stocks))
     print("=" * 80)
-    print(f"{'\u5de5\u5177\u540d\u79f0':<25} {'\u5df2\u5b8c\u6210':>10} {'\u5269\u4f59':>10} {'\u8fdb\u5ea6':>10}")
+    print(f"{'工具名称':<25} {'已完成':>10} {'剩余':>10} {'进度':>10}")
     print("-" * 60)
     
     incomplete_tools = []
