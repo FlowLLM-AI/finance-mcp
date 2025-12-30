@@ -49,7 +49,7 @@ def clean_cache_files():
         
         for record in data:
             tool_result = record.get("tool_result", "")
-            if tool_result == INVALID_RESULT:
+            if tool_result == "No relevant content foundNo relevant content found matching the query.":
                 # 记录被移除的 code
                 tool_args = record.get("tool_args", {})
                 code = tool_args.get("code", "")
