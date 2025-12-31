@@ -80,7 +80,10 @@ class DashscopeSearchOp(BaseAsyncToolOp):
         if self.enable_cache:
             cached_result = self.cache.load(query)
             if cached_result:
-                self.set_output(cached_result["response_content"])
+                self.set_output({
+                    "response_content": cached_result["response_content"],
+                    "search_results": cached_result["search_results"],
+                })
                 return
 
         if self.enable_role_prompt:
@@ -112,6 +115,8 @@ class DashscopeSearchOp(BaseAsyncToolOp):
         if hasattr(response, "output") and response.output:
             if hasattr(response.output, "search_info") and response.output.search_info:
                 search_results = response.output.search_info.get("search_results", [])
+                # Remove icon field from each search result
+                search_results = [{k: v for k, v in item.items() if k != "icon"} for item in search_results]
 
             if hasattr(response.output, "choices") and response.output.choices and len(response.output.choices) > 0:
                 response_content = response.output.choices[0].message.content
@@ -127,4 +132,7 @@ class DashscopeSearchOp(BaseAsyncToolOp):
         if self.enable_cache:
             self.cache.save(query, final_result, expire_hours=self.cache_expire_hours)
 
-        self.set_output(final_result["response_content"])
+        self.set_output({
+            "response_content": final_result["response_content"],
+            "search_results": final_result["search_results"],
+        })
