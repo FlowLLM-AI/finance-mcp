@@ -50,10 +50,12 @@ class ExecuteCodeOp(BaseAsyncToolOp):
 
         The method reads the ``code`` field from ``input_dict``,
         delegates execution to :func:`exec_code`, and stores the
-        textual result in the operation output.
+        textual result in the operation output. Optionally accepts
+        a ``timeout`` parameter to limit execution time.
         """
-
-        self.set_output(exec_code(self.input_dict["code"]))
+        timeout = self.input_dict.get("timeout", 30)
+        result = await exec_code(self.input_dict["code"], timeout=timeout)
+        self.set_output(result)
 
     async def async_default_execute(self, e: Exception = None, **_kwargs):
         """Fill outputs with a default failure message when execution fails."""

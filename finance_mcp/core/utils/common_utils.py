@@ -99,7 +99,7 @@ async def run_stream_op(op: BaseAsyncToolOp, enable_print: bool = True, **kwargs
         await task
 
 
-def exec_code(code: str) -> str:
+async def exec_code(code: str, timeout: Optional[float] = 30) -> str:
     """Execute arbitrary Python code and capture its printed output.
 
     The code is executed in the current global context and any text written to
@@ -108,20 +108,37 @@ def exec_code(code: str) -> str:
 
     Args:
         code: Python source code to execute.
+        timeout: Maximum time in seconds to wait for code execution. ``None``
+            disables the timeout and waits indefinitely. Defaults to 30 seconds.
 
     Returns:
         Captured ``stdout`` output, or the exception message if execution fails.
+
+    Raises:
+        asyncio.TimeoutError: If code execution exceeds ``timeout``.
     """
 
+    def _exec_code_sync():
+        """Synchronous code execution helper."""
+        try:
+            redirected_output = StringIO()
+            with contextlib.redirect_stdout(redirected_output):
+                exec(code)
+            return redirected_output.getvalue()
+        except Exception as e:  # noqa: BLE001
+            return str(e)
+        except BaseException as e:
+            return str(e)
+
     try:
-        redirected_output = StringIO()
-        with contextlib.redirect_stdout(redirected_output):
-            exec(code)
-
-        return redirected_output.getvalue()
-
-    except Exception as e:  # noqa: BLE001
-        return str(e)
-
-    except BaseException as e:
-        return str(e)
+        # Execute code in a separate thread to avoid blocking the event loop
+        if timeout:
+            result = await asyncio.wait_for(
+                asyncio.to_thread(_exec_code_sync),
+                timeout=timeout
+            )
+        else:
+            result = await asyncio.to_thread(_exec_code_sync)
+        return result
+    except asyncio.TimeoutError:
+        return f"Code execution timed out after {timeout} seconds"
