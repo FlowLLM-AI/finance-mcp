@@ -99,12 +99,33 @@ async def run_stream_op(op: BaseAsyncToolOp, enable_print: bool = True, **kwargs
         await task
 
 
+import multiprocessing
+def _exec_code_in_process(queue: multiprocessing.Queue, code: str) -> None:
+    """Helper function to execute code in a subprocess.
+
+    This function runs in a separate process and communicates results
+    back via a multiprocessing Queue.
+
+    Args:
+        queue: Queue to put the execution result into.
+        code: Python source code to execute.
+    """
+    try:
+        redirected_output = StringIO()
+        with contextlib.redirect_stdout(redirected_output):
+            exec(code)  # noqa: S102
+        queue.put(("success", redirected_output.getvalue()))
+    except BaseException as e:  # noqa: BLE001
+        queue.put(("error", str(e)))
+
+
 async def exec_code(code: str, timeout: Optional[float] = 30) -> str:
     """Execute arbitrary Python code and capture its printed output.
 
-    The code is executed in the current global context and any text written to
+    The code is executed in a separate process and any text written to
     ``stdout`` is captured and returned as a string. If an exception occurs,
-    its string representation is returned instead.
+    its string representation is returned instead. If execution exceeds the
+    timeout, the process is terminated and an error message is returned.
 
     Args:
         code: Python source code to execute.
@@ -112,33 +133,36 @@ async def exec_code(code: str, timeout: Optional[float] = 30) -> str:
             disables the timeout and waits indefinitely. Defaults to 30 seconds.
 
     Returns:
-        Captured ``stdout`` output, or the exception message if execution fails.
-
-    Raises:
-        asyncio.TimeoutError: If code execution exceeds ``timeout``.
+        Captured ``stdout`` output, the exception message if execution fails,
+        or a timeout error message if execution exceeds the timeout.
     """
 
-    def _exec_code_sync():
-        """Synchronous code execution helper."""
-        try:
-            redirected_output = StringIO()
-            with contextlib.redirect_stdout(redirected_output):
-                exec(code)
-            return redirected_output.getvalue()
-        except Exception as e:  # noqa: BLE001
-            return str(e)
-        except BaseException as e:
-            return str(e)
+    def _run_in_process() -> str:
+        """Run code execution in a subprocess with timeout handling."""
+        queue: multiprocessing.Queue = multiprocessing.Queue()
+        process = multiprocessing.Process(
+            target=_exec_code_in_process,
+            args=(queue, code),
+        )
+        process.start()
+        process.join(timeout=timeout)
 
-    try:
-        # Execute code in a separate thread to avoid blocking the event loop
-        if timeout:
-            result = await asyncio.wait_for(
-                asyncio.to_thread(_exec_code_sync),
-                timeout=timeout
-            )
-        else:
-            result = await asyncio.to_thread(_exec_code_sync)
-        return result
-    except asyncio.TimeoutError:
-        return f"Code execution timed out after {timeout} seconds"
+        if process.is_alive():
+            # Process is still running, terminate it
+            process.terminate()
+            process.join(timeout=1)
+            if process.is_alive():
+                # Force kill if terminate didn't work
+                process.kill()
+                process.join(timeout=1)
+            return f"Code execution timed out after {timeout} seconds"
+
+        # Process finished, get the result
+        if not queue.empty():
+            status, result = queue.get_nowait()
+            return result
+
+        return "No output"
+
+    # Run the blocking process operation in a thread to avoid blocking the event loop
+    return await asyncio.to_thread(_run_in_process)
