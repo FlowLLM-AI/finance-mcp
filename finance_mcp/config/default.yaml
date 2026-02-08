@@ -52,9 +52,19 @@ flow:
     enable_cache: false
     cache_expire_hours: 1
 
+  google_search:
+    flow_content: GoogleSearchOp()
+    enable_cache: true
+    cache_expire_hours: 1
+
   mock_search:
     flow_content: MockSearchOp()
     enable_cache: false
+    cache_expire_hours: 1
+
+  web_scrape:
+    flow_content: WebScrapeOp()
+    enable_cache: true
     cache_expire_hours: 1
 
   react_agent:

@@ -41,6 +41,9 @@ dependencies = [
     "crawl4ai>=0.7.4",
     "flowllm>=0.2.0.7",
     "tavily-python>=0.7.13",
+    "httpx>=0.27.0",
+    "requests>=2.31.0",
+    "markitdown>=0.0.1a3",
 ]
 
 [project.optional-dependencies]

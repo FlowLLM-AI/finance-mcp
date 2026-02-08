@@ -1,0 +1,17 @@
+tool_description: |
+  Perform Google searches via Serper API and retrieve rich results.
+  It is able to retrieve organic search results, people also ask, related searches, and knowledge graph.
+  
+  This tool provides comprehensive Google search functionality with support for:
+  - Regional and language customization (gl, hl parameters)
+  - Location-based results
+  - Time-based filtering (recent hour, day, week, month, year)
+  - Pagination for browsing multiple result pages
+  
+  Use this tool when you need:
+  - Current information from the web
+  - Multiple search results for comprehensive research
+  - Region or language-specific search results
+  - Time-filtered results (recent news, updates, etc.)
+  
+  Note: If you have multiple search keywords, call this tool separately for each one.

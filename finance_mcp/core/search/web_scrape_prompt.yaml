@@ -1,0 +1,22 @@
+tool_description: |
+  Scrape a website for its content using intelligent multi-strategy approach.
+  
+  This tool retrieves web page content using multiple scraping methods:
+  1. Jina AI Reader API (primary) - Best for dynamic content, JavaScript-rendered pages
+  2. requests + MarkItDown (fallback) - Good for static content and documents
+  
+  Features:
+  - Automatic protocol detection (adds https:// if missing)
+  - Handles dynamic content and JavaScript-heavy sites
+  - Supports iframe, shadow DOM, and complex web structures
+  - Automatic retry with exponential backoff
+  - Smart content extraction in Markdown format
+  
+  Use this tool when you need:
+  - Extract main content from web pages (including dynamic sites)
+  - Get text from articles, blogs, documentation, or news sites
+  - Retrieve structured content from modern web applications
+  - Parse and analyze web page information
+  
+  Note: This tool does not support files (PDF, images, videos directly).
+  For Hugging Face datasets or spaces, use appropriate dataset tools instead.
