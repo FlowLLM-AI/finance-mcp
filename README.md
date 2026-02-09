@@ -73,6 +73,8 @@ This mode runs Finance MCP directly through `uvx`, communicating via standard in
         "DASHSCOPE_API_KEY": "xxx",
         "TUSHARE_API_TOKEN": "xxx",
         "TAVILY_API_KEY": "xxx",
+        "SERPER_API_KEY": "xxx",
+        "JINA_API_KEY": "xxx",
         "BAILIAN_MCP_API_KEY": "xxx"
       }
     }
@@ -176,7 +178,9 @@ This will start the server, connect via FastMCP client, and test all available t
 | **tavily_search**         | Web search based on Tavily                                                                                    | `TAVILY_API_KEY`    | `query`: financial news                                                                    |
 | **mock_search**           | Mock search for LLM simulation                                                                                | -                   | `query`: test query                                                                        |
 | **react_agent**           | ReAct agent combining multiple tools for answering complex questions                                          | -                   | `query`: Help me analyze Zijin Mining's trend for the next week                            |
-
+| **google_search**         | Google search via Serper API with rich results including knowledge graph, people also ask, and related searches | `SERPER_API_KEY`    | `q`: Recent earnings report<br>`gl`: us<br>`hl`: en<br>`num`: 10<br>`tbs`: qdr:w          |
+| **web_scrape**            | Intelligent web scraping with Jina AI (primary) and requests+MarkItDown (fallback) for dynamic content        | `JINA_API_KEY` (optional) | `url`: `https://example.com/article`                                                 |
+|
 #### TongHuaShun Tools
 
 > **Note**: These tools are implemented via crawl4ai. High concurrency may result in IP blocking.
@@ -269,6 +273,32 @@ The response will be streamed in real-time, showing:
 
 **Note**: By default, this uses DashScope search, but you can replace it with other search backends (e.g., Tavily) by modifying the `stream_agent.yaml` configuration.
 
+### Server Configuration Parameters
+
+| Parameter                | Description                                                                                                                                                                                 | Example                                              |
+|--------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------|
+| `config`                 | Configuration files to load (comma-separated). Available: `default` (core flows), `ths` (TongHuaShun stock data), `stream_agent` (streaming agents), `external_mcp` (external MCP services) | `config=default,ths`                                 |
+| `mcp.transport`          | Transport mode: `stdio` (Claude Desktop), `sse` (web apps), `http` (RESTful), `streamable-http`                                                                                             | `mcp.transport=stdio`                                |
+| `mcp.host`               | Host address (for sse/http transports only)                                                                                                                                                 | `mcp.host=0.0.0.0`                                   |
+| `mcp.port`               | Port number (for sse/http transports only)                                                                                                                                                  | `mcp.port=8001`                                      |
+| `llm.default.model_name` | Default LLM model name (overrides config file)                                                                                                                                              | `llm.default.model_name=qwen3-30b-a3b-thinking-2507` |
+| `disabled_flows`         | JSON array of flow names to disable. **Tip**: Disable flows if you don't have the required API keys (e.g., `tavily_search` requires `TAVILY_API_KEY`)                                       | `disabled_flows='["react_agent"]'`                   |
+
+For the full set of available options and defaults, refer to [default.yaml](./finance_mcp/config/default.yaml).
+
+### Environment Variables
+
+| Variable              | Required    | Description                                                      |
+|-----------------------|-------------|------------------------------------------------------------------|
+| `FLOW_LLM_API_KEY`    | ✅ Yes       | API key for OpenAI-compatible LLM service                        |
+| `FLOW_LLM_BASE_URL`   | ✅ Yes       | Base URL for OpenAI-compatible LLM service                       |
+| `DASHSCOPE_API_KEY`   | ⚠️ Optional | For DashScope search and entity extraction                       |
+| `TUSHARE_API_TOKEN`   | ⚠️ Optional | For historical data analysis                                     |
+| `TAVILY_API_KEY`      | ⚠️ Optional | For Tavily web search                                            |
+| `SERPER_API_KEY`      | ⚠️ Optional | For Google search via Serper API                                 |
+| `JINA_API_KEY`        | ⚠️ Optional | For Jina AI web scraping (web_scrape has fallback if not set)   |
+| `JINA_BASE_URL`       | ⚠️ Optional | Jina AI base URL (default: https://r.jina.ai)                   |
+| `BAILIAN_MCP_API_KEY` | ⚠️ Optional | For external MCP services                                        |
 
 
 ## 🤝 Contributing
