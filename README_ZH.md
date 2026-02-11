@@ -71,7 +71,9 @@ uv pip install finance-mcp
         "DASHSCOPE_API_KEY": "xxx",
         "TUSHARE_API_TOKEN": "xxx",
         "TAVILY_API_KEY": "xxx",
-        "BAILIAN_MCP_API_KEY": "xxx"
+        "BAILIAN_MCP_API_KEY": "xxx",
+        "SERPER_API_KEY": "xxx",
+        "JINA_API_KEY": "xxx"
       }
     }
   }
@@ -173,7 +175,8 @@ python test_op/test_project_sse.py
 | **tavily_search**        | 基于 Tavily 的网络搜索                                                                                | `TAVILY_API_KEY`    | `query`: 财经新闻                                                                  |
 | **mock_search**          | 用于 LLM 模拟的模拟搜索                                                                               | -                   | `query`: 测试查询                                                                  |
 | **react_agent**          | 结合多个工具回答复杂问题的 ReAct 智能体                                                               | -                   | `query`: 帮我分析紫金矿业下周走势                                                  |
-
+| **google_search**         | Google search via Serper API with rich results including knowledge graph, people also ask, and related searches | `SERPER_API_KEY`    | `q`: Recent earnings report<br>`gl`: us<br>`hl`: en<br>`num`: 10<br>`tbs`: qdr:w          |
+| **web_scrape**            | Intelligent web scraping with Jina AI (primary) and requests+MarkItDown (fallback) for dynamic content        | `JINA_API_KEY` (optional) | `url`: `https://example.com/article`                                                 |
 #### 同花顺（TongHuaShun）工具
 
 > **注意**：这些工具通过 crawl4ai 实现。高并发可能导致 IP 被封禁。
@@ -227,6 +230,9 @@ python test_op/test_project_sse.py
 | `DASHSCOPE_API_KEY`      | ⚠️ 可选   | 用于 DashScope 搜索和实体提取            |
 | `TUSHARE_API_TOKEN`      | ⚠️ 可选   | 用于历史数据分析                         |
 | `TAVILY_API_KEY`         | ⚠️ 可选   | 用于 Tavily 网络搜索                     |
+| `SERPER_API_KEY`      | ⚠️ Optional | For Google search via Serper API                                 |
+| `JINA_API_KEY`        | ⚠️ Optional | For Jina AI web scraping (web_scrape has fallback if not set)   |
+| `JINA_BASE_URL`       | ⚠️ Optional | Jina AI base URL (default: https://r.jina.ai)                   |
 | `BAILIAN_MCP_API_KEY`    | ⚠️ 可选   | 用于外部 MCP 服务                        |
 
 ---
